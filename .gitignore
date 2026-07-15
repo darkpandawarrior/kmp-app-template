@@ -1,0 +1,15 @@
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+.kotlin/
+local.properties
+.idea/
+*.iml
+.DS_Store
+
+# Secrets — never commit (see scripts/setup-secrets.sh)
+keystore.properties
+*.jks
+*.keystore
+secrets.properties
