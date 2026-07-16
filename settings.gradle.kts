@@ -31,3 +31,4 @@ rootProject.name = providers.gradleProperty("fork.project.name").getOrElse("kmp-
 include(":cmp-shared")
 include(":cmp-android")
 include(":cmp-desktop")
+include(":cmp-web")

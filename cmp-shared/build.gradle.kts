@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKmpLibrary)
@@ -7,6 +9,13 @@ plugins {
 
 kotlin {
     jvm()
+
+    // Library target — :cmp-web owns the executable() + index.html; browser() here just lets
+    // the Kotlin/Wasm tooling (npm install, distribution tasks) see this as a JS-consuming module.
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
 
     android {
         namespace = "com.siddharth.apptemplate.shared"
@@ -54,6 +63,7 @@ kotlin {
         }
         androidMain.get().dependsOn(composeMain)
         jvmMain.get().dependsOn(composeMain)
+        getByName("wasmJsMain").dependsOn(composeMain)
 
         // iosArm64/iosSimulatorArm64 only: the ComposeUIViewController entry point (UIKit API,
         // not available on watchOS/other Apple targets).
