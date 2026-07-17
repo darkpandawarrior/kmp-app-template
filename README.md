@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/banner.svg" alt="kmp-app-template — a minimal Kotlin Multiplatform + Compose Multiplatform app seed" width="900"/>
+<img src="docs/assets/banner.gif" alt="kmp-app-template — a minimal Kotlin Multiplatform + Compose Multiplatform app seed" width="900"/>
 
 ### A minimal, actually-buildable Kotlin Multiplatform + Compose Multiplatform app seed.
 
