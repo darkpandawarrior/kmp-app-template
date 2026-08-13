@@ -15,6 +15,12 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
+        // Required for wasmJsBrowserTest: without a declared executable, the Compose Gradle plugin's
+        // Skiko-runtime check fails the test task outright (CMP-4906) since Compose UI can't load its
+        // renderer from a bare klib. Compose Multiplatform 1.12.0-rc01 promoted that check to a
+        // hard build failure (`checkComposeUiTestConfigurationForWasmJs`), so this is no longer
+        // optional. Same fix kmp-toolkit's :designsystem already carries.
+        binaries.executable()
     }
 
     android {
