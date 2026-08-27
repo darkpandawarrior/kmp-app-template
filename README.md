@@ -17,7 +17,7 @@ Web shells — nothing you have to delete before you begin. The reusable *librar
 
 **[Why](#why-kmp-app-template)** · **[What's inside](#whats-inside)** · **[Run it](#run-it)** · **[Make it yours](#make-it-yours)** · **[Roadmap](#roadmap)**
 
-**Portfolio:** [cv-siddharth.vercel.app](https://cv-siddharth.vercel.app/) &nbsp;·&nbsp; **Toolkit:** [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit) &nbsp;·&nbsp; **Build logic:** [kmp-build-logic](https://github.com/darkpandawarrior/kmp-build-logic) &nbsp;·&nbsp; **Sibling apps:** [Mileway](https://github.com/darkpandawarrior/Mileway) · [PaymentsLab](https://github.com/darkpandawarrior/PaymentsLab)
+**Case study:** [The KMP family](https://cv-siddharth.vercel.app/project/kmp-family) &nbsp;·&nbsp; **Toolkit:** [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit) &nbsp;·&nbsp; **Build logic:** [kmp-build-logic](https://github.com/darkpandawarrior/kmp-build-logic) &nbsp;·&nbsp; **Sibling apps:** [Mileway](https://github.com/darkpandawarrior/Mileway) · [PaymentsLab](https://github.com/darkpandawarrior/PaymentsLab)
 
 </div>
 
