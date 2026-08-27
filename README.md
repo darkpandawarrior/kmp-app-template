@@ -9,10 +9,10 @@ family: one shared Compose UI, a wired root-navigation scaffold, and thin Androi
 Web shells — nothing you have to delete before you begin. The reusable *library* pieces live in
 `kmp-toolkit`; this repo is the reusable *app shape*.
 
-![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20--Beta1-7F52FF?logo=kotlin&logoColor=white)
-![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.12.0--beta02-4285F4?logo=jetpackcompose&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20--RC-7F52FF?logo=kotlin&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.12.0--rc01-4285F4?logo=jetpackcompose&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20Desktop%20%7C%20iOS%20%7C%20Web-3DDC84)
-![Gradle](https://img.shields.io/badge/Gradle-9.7-02303A?logo=gradle&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-9.7.0-02303A?logo=gradle&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 **[Why](#why-kmp-app-template)** · **[What's inside](#whats-inside)** · **[Run it](#run-it)** · **[Make it yours](#make-it-yours)** · **[Roadmap](#roadmap)**
