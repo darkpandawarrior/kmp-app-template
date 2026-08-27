@@ -1,0 +1,12 @@
+{
+  "width": 900,
+  "fps": 24,
+  "duration": 4.5,
+  "colors": 192,
+  "dither": "none",
+  "clip_to_base_alpha": true,
+  "layers": [
+    {"id": "kat-rail", "enter": {"start": 0.3, "end": 1.1, "from": [0, 0]}, "exit": {"start": 3.6, "end": 4.3, "to": [0, 0]}},
+    {"id": "kat-dots", "enter": {"start": 1.0, "end": 1.5, "from": [0, 8]}, "exit": {"start": 3.6, "end": 4.3, "to": [0, 0]}}
+  ]
+}
