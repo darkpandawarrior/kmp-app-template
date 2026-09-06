@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    # macOS: the iOS/watchOS targets in cmp-shared need Xcode toolchains a Linux runner doesn't have.
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: AI wiring check (docs/ai-wiring.md)
+        run: |
+          scripts/test-check-ai-wiring.sh
+          scripts/check-ai-wiring.sh
+
+      - name: Gradle
+        run: ./gradlew assemble check
