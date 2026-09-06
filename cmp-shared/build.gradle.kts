@@ -58,6 +58,11 @@ kotlin {
 
         // Compose UI lives here, not in commonMain, so it's only on the classpath of targets
         // Compose Multiplatform actually supports (android, jvm, iosArm64, iosSimulatorArm64).
+        //
+        // The AI stack (:ai/:llm-chat/:result, vendored from external/kmp-toolkit) lives here too,
+        // for the same reason: its targets (android, jvm, iosArm64, iosSimulatorArm64, wasmJs) are
+        // exactly composeMain's target set — watchOS/iosX64 get neither Compose UI nor the AI panel
+        // that renders through it, so a commonMain dependency here would fail to resolve for them.
         val composeMain by creating {
             dependsOn(commonMain.get())
             dependencies {
@@ -65,6 +70,10 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.ui)
+                implementation("com.siddharth.kmp:ai:1.0.0")
+                implementation("com.siddharth.kmp:llm-chat:1.0.0")
+                implementation("com.siddharth.kmp:result:1.0.0")
+                implementation(libs.koin.core)
             }
         }
         androidMain.get().dependsOn(composeMain)
@@ -78,5 +87,14 @@ kotlin {
         }
         getByName("iosArm64Main").dependsOn(composeIosMain)
         getByName("iosSimulatorArm64Main").dependsOn(composeIosMain)
+
+        // AiPanelStateTest lives here, not commonTest: it exercises composeMain-only symbols
+        // (AiPanelState depends on :ai/:llm-chat, which don't publish watchOS/iosX64 targets — see
+        // composeMain's own comment above), and jvmTest already sees jvmMain's full dependency
+        // graph without a new source-set hierarchy.
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }

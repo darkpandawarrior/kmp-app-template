@@ -144,4 +144,5 @@ doesn't (yet), the target still gets `commonMain` for shared non-UI logic, see t
 - [ ] Optional Koin DI + retained-ViewModel variant of the nav scaffold
 - [ ] `navigation-compose` back-stack variant
 - [ ] A GitHub Actions build workflow (so this README earns a real CI badge)
-- [ ] Wire in a `kmp-toolkit` module or two as a worked example
+- [x] Wire in a `kmp-toolkit` module or two as a worked example — `:ai`/`:llm-chat`/`:result`,
+      the Home screen's "Ask AI" panel (see [`AiPanel.kt`](cmp-shared/src/composeMain/kotlin/com/siddharth/apptemplate/shared/ai/AiPanel.kt))

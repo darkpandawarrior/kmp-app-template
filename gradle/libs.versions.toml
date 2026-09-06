@@ -4,6 +4,7 @@ kotlin = "2.4.20-RC"
 compose-multiplatform = "1.12.0-rc01"
 androidx-activity = "1.13.0"
 coroutines = "1.11.0"
+koin = "4.2.2"
 android-compileSdk = "37"
 android-minSdk = "26"
 android-targetSdk = "37"
@@ -11,6 +12,10 @@ android-targetSdk = "37"
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+# Same version kmp-toolkit's own catalog pins (external/kmp-toolkit/gradle/libs.versions.toml) —
+# the AI seam's `aiModule()` DI wiring, not published by :ai/:llm-chat as an `api` dependency.
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
