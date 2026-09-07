@@ -17,7 +17,7 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 
 **[Why](#why-kmp-app-template)** · **[What's inside](#whats-inside)** · **[Run it](#run-it)** · **[Make it yours](#make-it-yours)** · **[Roadmap](#roadmap)**
 
-**Case study:** [The KMP family](https://cv-siddharth.vercel.app/project/kmp-family) &nbsp;·&nbsp; **Toolkit:** [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit) &nbsp;·&nbsp; **Build logic:** [kmp-build-logic](https://github.com/darkpandawarrior/kmp-build-logic) &nbsp;·&nbsp; **Sibling apps:** [Mileway](https://github.com/darkpandawarrior/Mileway) · [PaymentsLab](https://github.com/darkpandawarrior/PaymentsLab)
+**Case study:** [The KMP family](https://siddharth-pandalai.vercel.app/project/kmp-family) ([mirror](https://cv-siddharth.vercel.app/project/kmp-family)) &nbsp;·&nbsp; **Toolkit:** [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit) &nbsp;·&nbsp; **Build logic:** [kmp-build-logic](https://github.com/darkpandawarrior/kmp-build-logic) &nbsp;·&nbsp; **Sibling apps:** [Doori](https://github.com/darkpandawarrior/Doori) · [Gaddi](https://github.com/darkpandawarrior/Gaddi) · [PaymentsLab-KMP](https://github.com/darkpandawarrior/PaymentsLab-KMP) · [Candidai](https://github.com/darkpandawarrior/Candidai)
 
 </div>
 
@@ -49,7 +49,7 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 | Android | `android` | ✅ | `:cmp-android:assembleDebug` |
 | Desktop (JVM) | `jvm` | ✅ | `:cmp-desktop:run` |
 | iOS | `iosArm64`, `iosSimulatorArm64` | ✅ | `cmp-ios/iosApp.xcodeproj` (real device + Apple Silicon sim) |
-| iOS (Intel sim) | `iosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform 1.12.0-beta02 ships no iosX64 artifacts |
+| iOS (Intel sim) | `iosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform 1.12.0-rc01 ships no iosX64 artifacts |
 | Web | `wasmJs` | ✅ | `:cmp-web:wasmJsBrowserDevelopmentRun` |
 | watchOS | `watchosArm64`, `watchosSimulatorArm64`, `watchosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform ships no watchOS artifacts at all |
 
@@ -68,9 +68,14 @@ green, so a new app starts at "write the feature", not "fight the build".
 It's the template arm of the [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit) family:
 the toolkit ships the reusable *library* modules (offline-first store, network, security, on-device
 AI, and more), `kmp-build-logic` ships the shared Gradle conventions, and this repo ships the *app
-shape* they slot into. Its bigger siblings, [Mileway](https://github.com/darkpandawarrior/Mileway)
-and [PaymentsLab](https://github.com/darkpandawarrior/PaymentsLab), are what a real app grown from
-this seed looks like.
+shape* they slot into. Its bigger siblings, [Doori](https://github.com/darkpandawarrior/Doori),
+[Gaddi](https://github.com/darkpandawarrior/Gaddi),
+[PaymentsLab-KMP](https://github.com/darkpandawarrior/PaymentsLab-KMP) and
+[Candidai](https://github.com/darkpandawarrior/Candidai), are what a real app grown from this seed
+looks like. All four, `kmp-toolkit` and `kmp-build-logic` build against the same version triple as
+this template — see [Tech stack](#tech-stack) — since Gradle requires an included build's plugin
+versions to match the root's; a repo that drifts from the triple can't resolve the toolkit composite
+at all.
 
 ## What's inside
 
@@ -132,9 +137,9 @@ doesn't (yet), the target still gets `commonMain` for shared non-UI logic, see t
 
 | | |
 |---|---|
-| **Language** | Kotlin 2.4.20-Beta1 |
-| **UI** | Compose Multiplatform 1.12.0-beta02 |
-| **Build** | AGP 9.4.0-alpha04 · Gradle 9.7 |
+| **Language** | Kotlin 2.4.20-RC |
+| **UI** | Compose Multiplatform 1.12.0-rc01 |
+| **Build** | AGP 9.5.0-alpha02 · Gradle 9.7 |
 | **Targets** | Android · Desktop (JVM) · iOS (arm64, simulatorArm64, x64) · Web (wasmJs) · watchOS (arm64, simulatorArm64, x64) |
 | **License** | MIT |
 
