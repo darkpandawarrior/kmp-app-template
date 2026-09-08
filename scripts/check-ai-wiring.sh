@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Guards against "built the backend, never wired the client" (see docs/ai-wiring.md): every server
 # AI endpoint needs a client method and a real DI binding; every zero-IO AI engine module needs a
-# client-side consumer. The pattern that left three HireSignal AI services unreachable.
+# client-side consumer. The pattern that left three Candidai AI services unreachable.
 #
 # Marker-comment based, not routing/DI-syntax based — a syntax-aware check needs one rule per
 # routing library and DI framework; a one-line comment is the same shape everywhere.

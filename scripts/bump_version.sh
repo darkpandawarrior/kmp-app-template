@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Three-tier versioning — portable (bash) twin of the KMP family's gradle/versioning.gradle.kts.
-# Same formula, no build-tool dependency. See Mileway/docs/RELEASE.md §1 for the canonical model.
+# Same formula, no build-tool dependency. See Doori/docs/RELEASE.md §1 for the canonical model.
 #
 # Source of truth: repo-root MILESTONE (integer — bump to cut a release) + live git commit count
 # + today's date. Nothing is hand-typed.
