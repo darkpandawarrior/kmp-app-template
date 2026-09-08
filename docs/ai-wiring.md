@@ -1,6 +1,6 @@
 # AI wiring convention
 
-Three HireSignal AI services shipped a working backend that nothing on the client ever called —
+Three Candidai AI services shipped a working backend that nothing on the client ever called —
 same defect, no mechanical guard. `scripts/check-ai-wiring.sh` is that guard, wired into
 `.github/workflows/ci.yml`, and it fails the build for the same reason: a backend or an engine
 module exists with no reachable consumer.
