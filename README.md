@@ -38,7 +38,7 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 
 </details>
 
-> **At a glance**, **6-module** Compose Multiplatform seed (`:cmp-shared` · `:cmp-android` · `:cmp-desktop` ·
+> **At a glance**, **5-module** Compose Multiplatform seed (`:cmp-shared` · `:cmp-android` · `:cmp-desktop` ·
 > `:cmp-web` · `:cmp-ios`), root nav state machine wired, every target below compiles green on the
 > pinned toolchain.
 
