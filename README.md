@@ -9,10 +9,10 @@ family: one shared Compose UI, a wired root-navigation scaffold, and thin Androi
 Web shells, nothing you have to delete before you begin. The reusable *library* pieces live in
 `kmp-toolkit`; this repo is the reusable *app shape*.
 
-![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20--RC-7F52FF?logo=kotlin&logoColor=white)
-![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.12.0--rc01-4285F4?logo=jetpackcompose&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20-7F52FF?logo=kotlin&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.13.0--alpha01-4285F4?logo=jetpackcompose&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20Desktop%20%7C%20iOS%20%7C%20Web-3DDC84)
-![Gradle](https://img.shields.io/badge/Gradle-9.7.0-02303A?logo=gradle&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-9.8.0--rc--2-02303A?logo=gradle&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 **[Why](#why-kmp-app-template)** · **[What's inside](#whats-inside)** · **[Run it](#run-it)** · **[Make it yours](#make-it-yours)** · **[Roadmap](#roadmap)**
@@ -38,8 +38,8 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 
 </details>
 
-> **At a glance**, **5-module** Compose Multiplatform seed (`:cmp-shared` · `:cmp-android` · `:cmp-desktop` ·
-> `:cmp-web` · `cmp-ios/`), root nav state machine wired, every target below compiles green on the
+> **At a glance**, **6-module** Compose Multiplatform seed (`:cmp-shared` · `:cmp-android` · `:cmp-desktop` ·
+> `:cmp-web` · `:cmp-ios`), root nav state machine wired, every target below compiles green on the
 > pinned toolchain.
 
 ## Target matrix
@@ -48,8 +48,8 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 |---|---|---|---|
 | Android | `android` | ✅ | `:cmp-android:assembleDebug` |
 | Desktop (JVM) | `jvm` | ✅ | `:cmp-desktop:run` |
-| iOS | `iosArm64`, `iosSimulatorArm64` | ✅ | `cmp-ios/iosApp.xcodeproj` (real device + Apple Silicon sim) |
-| iOS (Intel sim) | `iosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform 1.12.0-rc01 ships no iosX64 artifacts |
+| iOS | `iosArm64`, `iosSimulatorArm64` | ✅ | `:cmp-ios` builds `ComposeApp.framework`; `cmp-ios/iosApp.xcodeproj` links it (real device + Apple Silicon sim) |
+| iOS (Intel sim) | `iosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform 1.13.0-alpha01 ships no iosX64 artifacts |
 | Web | `wasmJs` | ✅ | `:cmp-web:wasmJsBrowserDevelopmentRun` |
 | watchOS | `watchosArm64`, `watchosSimulatorArm64`, `watchosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform ships no watchOS artifacts at all |
 
@@ -85,7 +85,7 @@ at all.
 | `:cmp-android` | The Android app shell, `MainActivity` calls `App()`. |
 | `:cmp-desktop` | The Desktop app shell, `main()` opens a `Window { App() }`. |
 | `:cmp-web` | The wasmJs browser shell, `main()` calls `ComposeViewport { App() }`; `index.html` loads the bundle. |
-| `cmp-ios/` | The iOS Xcode project (not a Gradle module), `ContentView.swift` hosts `ComposeUIViewController { App() }` via `cmp-shared`'s `ComposeApp.framework`. |
+| `:cmp-ios` | The iOS app shell, in two halves. The Gradle module is the umbrella that exports `:cmp-shared` into a single static `ComposeApp.framework`, and owns `MainViewController()` — the `ComposeUIViewController { App() }` entry point. Alongside it, `cmp-ios/iosApp.xcodeproj` is the Xcode app that builds that framework from a build phase and links it. |
 
 ## Design choices
 
@@ -113,7 +113,7 @@ scripts/setup-secrets.sh              # optional: seed a local secrets.propertie
 ./gradlew :cmp-desktop:run                      # run the desktop app
 ./gradlew :cmp-android:assembleDebug            # build the Android APK
 ./gradlew :cmp-web:wasmJsBrowserDevelopmentRun   # run the web app (localhost, live reload)
-open cmp-ios/iosApp.xcodeproj                   # run the iOS app from Xcode (⌘R)
+open cmp-ios/iosApp.xcodeproj                   # run the iOS app from Xcode (⌘R — builds :cmp-ios first)
 ```
 
 ## Make it yours
@@ -137,9 +137,9 @@ doesn't (yet), the target still gets `commonMain` for shared non-UI logic, see t
 
 | | |
 |---|---|
-| **Language** | Kotlin 2.4.20-RC |
-| **UI** | Compose Multiplatform 1.12.0-rc01 |
-| **Build** | AGP 9.5.0-alpha02 · Gradle 9.7 |
+| **Language** | Kotlin 2.4.20 |
+| **UI** | Compose Multiplatform 1.13.0-alpha01 |
+| **Build** | AGP 9.5.0-alpha06 · Gradle 9.8.0-rc-2 |
 | **Targets** | Android · Desktop (JVM) · iOS (arm64, simulatorArm64, x64) · Web (wasmJs) · watchOS (arm64, simulatorArm64, x64) |
 | **License** | MIT |
 
