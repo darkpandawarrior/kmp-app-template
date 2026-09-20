@@ -211,6 +211,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
+				/* Partner to cmp-ios/build.gradle.kts: only iosArm64 and iosSimulatorArm64
+				   are declared there, so the simulator build must not ask for x86_64. */
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../cmp-ios/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
@@ -238,6 +241,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
+				/* Partner to cmp-ios/build.gradle.kts: only iosArm64 and iosSimulatorArm64
+				   are declared there, so the simulator build must not ask for x86_64. */
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../cmp-ios/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
