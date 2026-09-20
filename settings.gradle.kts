@@ -36,6 +36,9 @@ include(":cmp-shared")
 include(":cmp-android")
 include(":cmp-desktop")
 include(":cmp-web")
+// The iOS umbrella module that produces ComposeApp.framework. cmp-ios/ also holds the Xcode
+// project that links it; the Gradle module is cmp-ios/build.gradle.kts, not the .xcodeproj.
+include(":cmp-ios")
 
 // The AI stack (:ai/:llm-chat/:result) vendored from kmp-toolkit — pinned SHA in
 // external/kmp-toolkit, see that submodule's own commit for what it carries. Only the modules the
