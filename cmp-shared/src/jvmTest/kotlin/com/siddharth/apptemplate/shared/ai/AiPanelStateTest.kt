@@ -43,8 +43,10 @@ private class FakeBackend(
     override suspend fun generate(parts: List<LlmPart>): AiResult<String> = generate((parts.single() as LlmPart.Text).text)
 }
 
-private val AVAILABLE_CAPS = AiCapabilities(streaming = true, multimodal = false, honoredConfigFields = emptySet(), unavailableReason = null)
-private val NO_KEY_CAPS = AiCapabilities(streaming = false, multimodal = false, honoredConfigFields = emptySet(), unavailableReason = AiFailure.NoKey)
+private val AVAILABLE_CAPS =
+    AiCapabilities(streaming = true, multimodal = false, honoredConfigFields = emptySet(), unavailableReason = null)
+private val NO_KEY_CAPS =
+    AiCapabilities(streaming = false, multimodal = false, honoredConfigFields = emptySet(), unavailableReason = AiFailure.NoKey)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AiPanelStateTest {

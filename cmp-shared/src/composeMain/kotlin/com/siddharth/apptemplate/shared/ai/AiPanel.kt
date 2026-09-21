@@ -35,7 +35,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** The AI backend the Home panel talks to — on-device first, escalating to the configured cloud chain. */
-class HomeAiBackend(delegate: OnDeviceLlm) : OnDeviceLlm by delegate
+class HomeAiBackend(
+    delegate: OnDeviceLlm,
+) : OnDeviceLlm by delegate
 
 /**
  * The cloud chain's last resort with no key configured — always unavailable, so

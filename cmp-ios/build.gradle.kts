@@ -36,7 +36,10 @@ kotlin {
             // what `embedAndSignAppleFrameworkForXcode` and the Xcode phase below are set up for.
             isStatic = true
             // export() only surfaces a module whose dependency is declared `api` below.
-            export(project(":cmp-shared"))
+            // `dependencies.project(...)`, not `project(...)`: the bare form hands `export` a
+            // Project object as a dependency notation, which Gradle 9 deprecates and Gradle 10
+            // fails on. The DependencyHandler overload returns a ProjectDependency instead.
+            export(dependencies.project(":cmp-shared"))
         }
     }
 
@@ -45,15 +48,18 @@ kotlin {
         // kotlin.mpp.applyDefaultHierarchyTemplate=false (see :cmp-shared for why), so no
         // intermediate iosMain source set is created for us. Same manual pattern :cmp-shared uses.
         // The name "iosMain" is what gives this source set src/iosMain/kotlin by default.
-        val iosMain by creating {
-            dependsOn(commonMain.get())
-            dependencies {
-                // api(), not implementation(): export() above only works on an `api` dependency.
-                api(project(":cmp-shared"))
-                // ComposeUIViewController lives in compose.ui's UIKit-backed iOS source set.
-                implementation(compose.ui)
+        // `create(...)`, not `by creating`: the property-delegate source-set syntax is
+        // deprecated in Gradle 9 and removed in Gradle 10.
+        val iosMain =
+            create("iosMain") {
+                dependsOn(commonMain.get())
+                dependencies {
+                    // api(), not implementation(): export() above only works on an `api` dependency.
+                    api(project(":cmp-shared"))
+                    // ComposeUIViewController lives in compose.ui's UIKit-backed iOS source set.
+                    implementation(compose.ui)
+                }
             }
-        }
         getByName("iosArm64Main").dependsOn(iosMain)
         getByName("iosSimulatorArm64Main").dependsOn(iosMain)
     }

@@ -25,8 +25,14 @@ kotlin {
 
     android {
         namespace = "com.siddharth.apptemplate.shared"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
     }
 
     // This module declares the iOS TARGETS but produces no framework — :cmp-ios is the umbrella
@@ -60,19 +66,22 @@ kotlin {
         // for the same reason: its targets (android, jvm, iosArm64, iosSimulatorArm64, wasmJs) are
         // exactly composeMain's target set — watchOS/iosX64 get neither Compose UI nor the AI panel
         // that renders through it, so a commonMain dependency here would fail to resolve for them.
-        val composeMain by creating {
-            dependsOn(commonMain.get())
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.ui)
-                implementation("com.siddharth.kmp:ai:1.0.0")
-                implementation("com.siddharth.kmp:llm-chat:1.0.0")
-                implementation("com.siddharth.kmp:result:1.0.0")
-                implementation(libs.koin.core)
+        // `create(...)`, not `by creating`: the property-delegate source-set syntax is
+        // deprecated in Gradle 9 and removed in Gradle 10.
+        val composeMain =
+            create("composeMain") {
+                dependsOn(commonMain.get())
+                dependencies {
+                    implementation(compose.runtime)
+                    implementation(compose.foundation)
+                    implementation(compose.material3)
+                    implementation(compose.ui)
+                    implementation("com.siddharth.kmp:ai:1.0.0")
+                    implementation("com.siddharth.kmp:llm-chat:1.0.0")
+                    implementation("com.siddharth.kmp:result:1.0.0")
+                    implementation(libs.koin.core)
+                }
             }
-        }
         androidMain.get().dependsOn(composeMain)
         jvmMain.get().dependsOn(composeMain)
         getByName("wasmJsMain").dependsOn(composeMain)
