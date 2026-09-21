@@ -1,0 +1,322 @@
+# =============================================================================
+# config/detekt/detekt.yml — the family standard.
+# Canonical copy: /Users/darkpandawarrior/Repos/KMP/kmp-toolkit/config/detekt/detekt.yml
+#
+# Toolchain: dev.detekt 2.0.0-alpha.6 (NOT io.gitlab.arturbosch.detekt 1.x).
+# Rules that only exist in 1.x (UnusedPrivateMember, MayBeConst) are deliberately absent.
+#
+# HOW TO READ THE EXCLUSIONS
+#   Every `excludes:` and every `active: false` below carries the reason it is an
+#   artefact. Adding one without a reason creates next year's mystery.
+#
+# THE TRAP THAT MAKES THIS FILE FRAGILE
+#   detekt's `excludes:` REPLACES the built-in default list, it does not extend it.
+#   Omitting the test globs from naming.FunctionNaming turns every backtick-named
+#   test function into a violation. So the *notOurs anchor below re-lists detekt 2.0's
+#   defaults IN FULL, plus the KMP test source sets detekt ships no default for but
+#   this family targets (desktopTest, wasmJsTest, watchosTest, appleTest, nativeTest).
+#   Anchor once, alias everywhere. (SnakeYAML expands these before detekt's config
+#   validation runs, so `config.validation: true` stays on.)
+# =============================================================================
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+# -----------------------------------------------------------------------------
+comments:
+  # KDoc-on-everything produces noise, not documentation, in a UI-heavy codebase.
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false
+
+# -----------------------------------------------------------------------------
+complexity:
+  CyclomaticComplexMethod:
+    # ARTEFACT: Room's KSP output. A generated *Dao_Impl.query() with a branch per
+    # nullable column is machine-written; nobody can refactor it.
+    # The full glob list lives here once and is aliased as *notOurs below.
+    excludes: &notOurs
+      - '**/build/generated/**'   # KSP/Room/Compose-resources output. Nobody wrote these
+                                  # names, nobody can change them, and regenerating rewrites
+                                  # them identically after every clean.
+      # --- detekt 2.0's own defaults, restored verbatim. Do not drop any of these. ---
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/commonTest/**'
+      - '**/jvmTest/**'
+      - '**/androidUnitTest/**'
+      - '**/androidInstrumentedTest/**'
+      # AGP renamed the KMP test source sets: androidUnitTest -> androidHostTest and
+      # androidInstrumentedTest -> androidDeviceTest. detekt 2.0.0-alpha.6's defaults still carry
+      # only the OLD names, and this family builds on AGP 9.5.0-alpha06, so WITHOUT these two lines
+      # every backtick-free test function name in androidHostTest is a live FunctionNaming
+      # violation and every test literal is a live MagicNumber. Verified against
+      # default-detekt-config.yml inside detekt-core-2.0.0-alpha.6.jar.
+      - '**/androidHostTest/**'
+      - '**/androidDeviceTest/**'
+      - '**/jsTest/**'
+      - '**/iosTest/**'
+      # --- KMP source sets this family targets that detekt 2.0 ships no default for. ---
+      - '**/desktopTest/**'
+      - '**/wasmJsTest/**'
+      - '**/watchosTest/**'
+      - '**/appleTest/**'
+      - '**/nativeTest/**'
+      - '**/*.kts'                # Gradle scripts are configuration, not application logic.
+    allowedComplexity: 20         # The family number: game-rule and payment-orchestration
+                                  # state machines are legitimately branchy.
+    ignoreSimpleWhenEntries: true # A `when` over a sealed UiState is ONE decision expressed in
+                                  # N arms, not N decisions.
+  LongMethod:
+    excludes: *notOurs            # ARTEFACT: generated Compose resource accessors declare
+                                  # 100-line _collectCommonMainString0Resources functions.
+    allowedLines: 80
+    ignoreAnnotated: &composable
+      # Both forms on purpose. detekt's per-source-set KMP tasks run WITHOUT type resolution,
+      # so FQN matching is not guaranteed; detekt's own Compose guide uses the simple name.
+      - 'Composable'
+      - 'androidx.compose.runtime.Composable'
+  LongParameterList:
+    excludes: *notOurs
+    allowedFunctionParameters: 10      # A Compose entry point takes host + nav callbacks +
+    allowedConstructorParameters: 10   # modifier + VM default.
+    ignoreDefaultParameters: true      # A parameter with a default is not a burden on the caller.
+    ignoreAnnotated: *composable
+  TooManyFunctions:
+    excludes: *notOurs
+    allowedFunctionsPerFile: 40
+    allowedFunctionsPerClass: 20
+    allowedFunctionsPerInterface: 15
+    allowedFunctionsPerObject: 20
+    allowedFunctionsPerEnum: 10
+    ignoreAnnotatedFunctions:
+      # ARTEFACT. A file holding thirty composables is a component catalogue; a file holding
+      # thirty previews is a preview sheet. Neither is a god class, and the metric measures the
+      # wrong thing on them. Prescribed by detekt's own Compose guide:
+      # https://detekt.dev/docs/introduction/compose/
+      # This does NOT rubber-stamp the rule: ordinary classes past 20 methods still fire.
+      - 'Composable'
+      - 'Preview'
+  LargeClass:
+    excludes: *notOurs            # ARTEFACT: a generated *Dao_Impl for a 20-column entity
+                                  # is mechanically large.
+  NestedBlockDepth:
+    excludes: *notOurs
+
+# -----------------------------------------------------------------------------
+coroutines:
+  # These catch real structured-concurrency bugs and cost nothing — this repo was
+  # simply never given them.
+  active: true
+  GlobalCoroutineUsage:
+    active: true
+  RedundantSuspendModifier:
+    active: true
+  SuspendFunWithFlowReturnType:
+    active: true
+
+# -----------------------------------------------------------------------------
+empty-blocks:
+  EmptyFunctionBlock:
+    excludes: *notOurs
+    ignoreOverridden: true
+    # ARTEFACT: no-op test doubles, unimplemented platform stubs, and listener adapters where
+    # only one callback of four is wanted. For an override, the empty body IS the implementation.
+    # An empty NON-override — a function somebody forgot to finish — still fires.
+
+# -----------------------------------------------------------------------------
+exceptions:
+  TooGenericExceptionCaught:
+    excludes: *notOurs
+    active: true
+    # The recorded family reason for switching this off was "runCatching { } is idiomatic".
+    # That reason does not hold: this rule fires on `catch` clauses and runCatching {} has none,
+    # it returns a Result. Genuine `catch (e: Exception)` sites must be narrowed, named
+    # `_`/`ignored`, or carry a narrow @Suppress naming the boundary they guard.
+    exceptionNames:
+      - 'ArrayIndexOutOfBoundsException'
+      - 'Error'
+      - 'Exception'
+      - 'IllegalMonitorStateException'
+      - 'NullPointerException'
+      - 'RuntimeException'
+      - 'Throwable'
+    allowedExceptionNameRegex: '_|(ignored)'
+  SwallowedException:
+    excludes: *notOurs
+    active: true                  # A swallowed exception is the bug you get paged for. Either
+                                  # log it, wrap it, or name the variable `_`/`ignored` so the
+                                  # intent is on the page.
+  TooGenericExceptionThrown:
+    excludes: *notOurs
+    active: true
+
+# -----------------------------------------------------------------------------
+naming:
+  ClassNaming:
+    excludes: *notOurs
+    # ARTEFACT: Room's KSP contract is to name the generated implementation <Dao>_Impl; the
+    # underscore is Room's, not a style choice available to us.
+  VariableNaming:
+    excludes: *notOurs
+    # ARTEFACT: Room's generated locals and fields (`__db`, `_columnIndexOfCreatedAtMs`).
+    # The underscore convention is Room's, applied by KSP at build time. Hand-written
+    # SCREAMING_SNAKE locals still fire, which is the point of keeping the rule on.
+  ConstructorParameterNaming:
+    excludes: *notOurs
+    # ARTEFACT: generated `<Dao>_Impl(__db: RoomDatabase)` constructors.
+  FunctionParameterNaming:
+    excludes: *notOurs
+    # ARTEFACT: generated parameters.
+  FunctionNaming:
+    excludes: *notOurs
+    ignoreAnnotated: *composable
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    # Belt AND braces, on purpose. `ignoreAnnotated` is the precise instrument, but if the
+    # annotation fails to match under a task running without type resolution, EVERY composable
+    # becomes a violation at once. The permissive pattern is the proven fallback.
+    # ARTEFACT this also covers: generated `_collectCommonMainString0Resources`.
+  TopLevelPropertyNaming:
+    excludes: *notOurs
+    constantPattern: '[A-Z][A-Za-z0-9]*'
+    # Compose's API guidelines specify PascalCase for top-level constants, which is why
+    # AndroidX's own Compose source reads this way; detekt's Compose guide prescribes exactly
+    # this pattern: https://detekt.dev/docs/introduction/compose/
+    # NOTE a pattern of '[A-Z][_A-Z0-9]*|[a-z][a-zA-Z0-9]*' can never match PascalCase and only
+    # looks handled — do not "fix" this line back into that shape.
+  MatchingDeclarationName:
+    active: false
+    # DELIBERATE IDIOM, not laziness. This codebase groups small related declarations per file
+    # (a composable plus its UI enum, a catalog plus its item type, a mapper plus its DTO).
+    # MUST stay paired with `ktlint_standard_filename = disabled` in .editorconfig — one without
+    # the other just moves the noise.
+  InvalidPackageDeclaration:
+    excludes: *notOurs
+    active: true                  # Never baseline a package/directory mismatch — it breaks IDE
+                                  # navigation and symbol-level codegraph queries. Fix with `git mv`.
+
+# -----------------------------------------------------------------------------
+performance:
+  SpreadOperator:
+    active: false                 # Vararg spreading is idiomatic Kotlin at several engine and
+                                  # DI call sites; the array-copy cost the rule warns about is
+                                  # irrelevant at these call frequencies.
+  ForEachOnRange:
+    excludes: *notOurs
+    active: true                  # `(0..n).forEach` allocates; `for (i in 0..n)` does not, and
+                                  # is not less readable.
+
+# -----------------------------------------------------------------------------
+style:
+  MagicNumber:
+    excludes: *notOurs
+    active: true
+    # NOT AN ARTEFACT RULE.
+    # A bare 111320.0 in a Kalman smoother, or a bare 504 in a status mapper, is the exact
+    # defect this rule exists to catch. Turning MagicNumber off to make a number go down is
+    # rubber-stamping the debt.
+    ignorePropertyDeclaration: true          # `val CardRadius = 16.dp` is self-documenting.
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreLocalVariableDeclaration: true
+    ignoreNamedArgument: true                # `alpha = 0.6f` names itself at the call site.
+    ignoreEnums: true
+      # ARTEFACT. `TurnSpeed.SLOW(1.4f)` — the enum entry name IS the name of the number.
+      # Extracting a constant to feed one enum entry adds indirection and no information.
+    ignoreAnnotated:
+      - 'Composable'
+      - 'androidx.compose.runtime.Composable'
+      # 16.dp / 0.6f alpha / 1f weight are Compose's vocabulary inside a @Composable tree.
+      # HONEST LIMIT, measured elsewhere in the family: survivors live in `DrawScope` extension
+      # functions and Canvas draw lambdas, which carry no annotation for any ignore to match.
+      # Those are NOT artefacts — `private const val NeedleRadiusFraction = 0.86f` is strictly
+      # better code, and the PascalCase TopLevelPropertyNaming above makes writing it idiomatic.
+      - 'Preview'
+      - 'androidx.compose.ui.tooling.preview.Preview'
+      - 'PreviewLightDark'
+      - 'PreviewMatrix'
+      - 'PreviewFontScales'
+      - 'PreviewDevices'
+      - 'PreviewStates'
+    ignoreNumbers:
+      # Keep this list SHORT. Listing 0 through 10 inclusive silently exempts `if (retries > 5)`
+      # and `grade >= 7`. -1/0/1/2 are detekt's defaults (identity, empty, off-by-one, halving);
+      # 100 is percentage conversion; 360 is degrees. An 800ms animation and a 1000ms debounce
+      # are timings that deserve names, so they are NOT listed.
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
+      - '100'
+      - '360'
+  ThrowsCount:
+    excludes: *notOurs
+    max: 3
+    excludeGuardClauses: true     # `require`/`check` at the top of a function are precondition
+                                  # declarations, not control flow.
+                                  # NOTE: the family standard filed this rule under `exceptions`.
+                                  # In detekt 2.0.0-alpha.6 ThrowsCount is a `style` rule — under
+                                  # `exceptions` it fails config.validation outright. Verified
+                                  # against default-detekt-config.yml in detekt-core-2.0.0-alpha.6.
+  MaxLineLength:
+    active: false
+    # NOT forgiveness — a SINGLE-OWNER decision. ktlint's standard:max-line-length owns line
+    # length for this family, via .editorconfig. Two tools enforcing one rule at two different
+    # numbers is how the family ended up with three numbers for one rule. The single number is
+    # set once, in .editorconfig.
+  WildcardImport:
+    active: false
+    # Compose and the design-system modules pull dozens of symbols per file and the IDE
+    # collapses them; fighting that produces churn, not clarity. MUST stay paired with
+    # `ktlint_standard_no-wildcard-imports = disabled`.
+  ForbiddenComment:
+    active: false                 # TODO(ios)/TODO(wasm) markers track real unimplemented
+                                  # platform actuals in a KMP tree; they are a map, not rot.
+  ReturnCount:
+    excludes: *notOurs
+    max: 4
+    excludeGuardClauses: true
+    # `?: return` / `if (x == null) return` at the top of a function are preconditions, not
+    # branches; early return for Loading/Error/Empty is how a Compose screen is written.
+    # Four real returns AFTER guards still fires, so the rule keeps its teeth.
+  MayBeConstant:
+    excludes: *notOurs
+    active: true                  # `const val` is free and removes a field read per access.
+  FunctionOnlyReturningConstant:
+    excludes: *notOurs
+    active: true
+    ignoreOverridableFunction: true
+    ignoreActualFunction: true    # A KMP `actual fun` returning a constant on one platform is
+                                  # the whole point of expect/actual — the contract, not a smell.
+  UnusedParameter:
+    excludes: *notOurs
+    allowedNames: '_|ignored|expected'
+    # NOT an artefact. In a shared design-system module, dead parameter surface propagates to
+    # every consumer and the next reader cannot tell a placeholder from a bug.
+  UnusedPrivateFunction:
+    excludes: *notOurs
+    allowedNames: '(_|ignored|expected|serialVersionUID)'
+    ignoreAnnotated:
+      # ARTEFACT: a @Preview function is invoked by the IDE and by screenshot tests, never by
+      # application code. Prescribed by detekt's Compose guide.
+      - 'Preview'
+      - 'androidx.compose.ui.tooling.preview.Preview'
+      - 'PreviewLightDark'
+      - 'PreviewMatrix'
+      - 'PreviewFontScales'
+      - 'PreviewDevices'
+      - 'PreviewStates'
+  UnusedPrivateProperty:
+    excludes: *notOurs
+    allowedNames: '(_|ignored|expected|serialVersionUID)'
+  UnusedPrivateClass:
+    excludes: *notOurs
+    active: true
+  LoopWithTooManyJumpStatements:
+    excludes: *notOurs
+    maxJumpCount: 2
+    # One `continue` guard plus one `break` on the success case is a normal, readable scan loop.
+    # Three jumps still fires.
