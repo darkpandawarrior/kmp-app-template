@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  PrivacyInfo.xcprivacy — Apple requires this file to accept an App Store submission.
+
+  READ THIS BEFORE YOU SHIP A FORK OF THIS TEMPLATE.
+
+  What is declared below is the truth for the TEMPLATE AS SHIPPED, which does nothing but render
+  three Compose screens and an AI panel that has no key configured. It stores nothing, tracks
+  nothing, and calls none of Apple's "required reason" APIs. That is a deliberately empty starting
+  point, not a default you can leave alone: the moment your app saves a preference, reads a file,
+  or adds an analytics SDK, this file is out of date and has to be edited.
+
+  Over-declaring is a false statement to Apple. Under-declaring gets the submission rejected.
+  Declare what your code actually does, and grep for it rather than guessing.
+
+  The four required-reason categories most likely to apply to an app grown from this template,
+  with the reason code for the ordinary case. Uncomment the matching block in
+  NSPrivacyAccessedAPITypes when the usage becomes real:
+
+    NSPrivacyAccessedAPICategoryUserDefaults   CA92.1  reading/writing your OWN app's defaults.
+                                                       Needed as soon as anything reaches
+                                                       NSUserDefaults — for example swapping
+                                                       kmp-toolkit's KeychainSettings for
+                                                       NSUserDefaultsSettings, or adding
+                                                       multiplatform-settings with its default
+                                                       iOS backend. NOT needed today: this
+                                                       template's only secure storage path is
+                                                       :llm-chat's SecureKeyStore, which uses the
+                                                       Keychain, and the Keychain is not a
+                                                       required-reason API.
+    NSPrivacyAccessedAPICategoryFileTimestamp  C617.1  reading a file's creation/modification date.
+    NSPrivacyAccessedAPICategorySystemBootTime 35F9.1  measuring elapsed time from boot time.
+    NSPrivacyAccessedAPICategoryDiskSpace      E174.1  checking available disk space.
+
+  NSPrivacyCollectedDataTypes describes data that LEAVES the device. The template sends nothing:
+  its AI panel ships with no provider key, so no prompt ever reaches a server. Wire a real key
+  through :llm-chat and prompts become collected data you must declare here.
+
+  Reference: https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
+-->
+<plist version="1.0">
+<dict>
+	<!-- The template neither tracks users nor links data to third-party data for advertising. -->
+	<key>NSPrivacyTracking</key>
+	<false/>
+
+	<!-- Must stay empty while NSPrivacyTracking is false; Apple rejects the combination otherwise. -->
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+
+	<!-- Nothing leaves the device. See the note on the AI panel above. -->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+
+	<!-- No required-reason API is reached by the template's own code. See the table above. -->
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array/>
+</dict>
+</plist>

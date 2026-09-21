@@ -29,21 +29,18 @@ kotlin {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
+    // This module declares the iOS TARGETS but produces no framework — :cmp-ios is the umbrella
+    // that does that, and it export()s this module. Keeping exactly one framework in the build
+    // means there is exactly one answer to "what does Xcode link against".
+    //
     // iosArm64/iosSimulatorArm64 get the Compose UI (below); iosX64 is kept as a bare
-    // Kotlin/Native target only — Compose Multiplatform 1.12.0-beta02 publishes no iosX64
-    // artifacts (org.jetbrains.compose.{runtime,foundation,ui}), so App() can't run there.
+    // Kotlin/Native target only — Compose Multiplatform publishes no iosX64 artifacts
+    // (org.jetbrains.compose.{runtime,foundation,ui}), so App() can't run there.
     // ponytail: scaffold-only until Compose ships iosX64, or drop it if Intel sim support
     // isn't actually needed.
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-        iosX64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
+    iosArm64()
+    iosSimulatorArm64()
+    iosX64()
 
     // Compile targets only, same reason as iosX64 above — Compose Multiplatform publishes no
     // watchOS artifacts at all. Ready for shared non-UI logic (commonMain); no UI shell.
@@ -80,13 +77,11 @@ kotlin {
         jvmMain.get().dependsOn(composeMain)
         getByName("wasmJsMain").dependsOn(composeMain)
 
-        // iosArm64/iosSimulatorArm64 only: the ComposeUIViewController entry point (UIKit API,
-        // not available on watchOS/other Apple targets).
-        val composeIosMain by creating {
-            dependsOn(composeMain)
-        }
-        getByName("iosArm64Main").dependsOn(composeIosMain)
-        getByName("iosSimulatorArm64Main").dependsOn(composeIosMain)
+        // The two iOS targets Compose Multiplatform publishes artifacts for, so App() compiles
+        // for them. The UIKit entry point that wraps App() in a UIViewController lives in
+        // :cmp-ios (MainViewController.kt), not here — this module stays UIKit-free.
+        getByName("iosArm64Main").dependsOn(composeMain)
+        getByName("iosSimulatorArm64Main").dependsOn(composeMain)
 
         // AiPanelStateTest lives here, not commonTest: it exercises composeMain-only symbols
         // (AiPanelState depends on :ai/:llm-chat, which don't publish watchOS/iosX64 targets — see

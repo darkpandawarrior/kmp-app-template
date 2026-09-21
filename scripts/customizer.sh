@@ -37,8 +37,10 @@ OLD_PATH="${OLD_PKG//.//}"
 NEW_PATH="${NEW_PKG//.//}"
 
 # 1. Rewrite references in text files (skip build output, git, the wrapper jar, and this script).
+# .pbxproj is in the list because the iOS app's PRODUCT_BUNDLE_IDENTIFIER lives there and nowhere
+# else — a fork that skipped it would ship with com.siddharth.apptemplate.ios as its bundle id.
 find . \
-  -type f \( -name '*.kt' -o -name '*.kts' -o -name '*.xml' -o -name '*.toml' -o -name '*.properties' -o -name '*.md' \) \
+  -type f \( -name '*.kt' -o -name '*.kts' -o -name '*.xml' -o -name '*.toml' -o -name '*.properties' -o -name '*.md' -o -name '*.pbxproj' \) \
   -not -path './.git/*' -not -path '*/build/*' -not -path './scripts/customizer.sh' -print0 |
   while IFS= read -r -d '' f; do
     # ponytail: `sed -i ''` is the BSD (macOS) form; on GNU/Linux use `sed -i`.
@@ -52,8 +54,10 @@ find . -type d -path "*/$OLD_PATH" -not -path '*/build/*' -not -path './.git/*' 
   git mv "$dir" "$newdir" 2>/dev/null || mv "$dir" "$newdir"
 done
 
-# 3. Project/app display name.
-sed -i '' -e "s|$OLD_NAME|$NEW_NAME|g" gradle.properties settings.gradle.kts README.md 2>/dev/null || \
-  sed -i -e "s|$OLD_NAME|$NEW_NAME|g" gradle.properties settings.gradle.kts README.md
+# 3. Project/app display name. The .pbxproj carries it as INFOPLIST_KEY_CFBundleDisplayName —
+# that is the name under the icon on an iPhone home screen, so it has to move with the rest.
+NAME_FILES=(gradle.properties settings.gradle.kts README.md cmp-ios/iosApp.xcodeproj/project.pbxproj)
+sed -i '' -e "s|$OLD_NAME|$NEW_NAME|g" "${NAME_FILES[@]}" 2>/dev/null || \
+  sed -i -e "s|$OLD_NAME|$NEW_NAME|g" "${NAME_FILES[@]}"
 
 echo "Done. Review the diff, then: ./gradlew :cmp-desktop:run"
