@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.siddharth.apptemplate.shared.ai.AiPanel
 import com.siddharth.apptemplate.shared.ai.AiPanelState
@@ -92,5 +93,42 @@ private fun Centered(content: @Composable () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) { content() }
+    }
+}
+
+// ---- Previews -------------------------------------------------------------------------------
+//
+// `androidx.compose.ui.tooling.preview.Preview`, imported above, comes from
+// org.jetbrains.compose.ui:ui-tooling-preview — the MULTIPLATFORM annotation since Compose
+// Multiplatform 1.10, which is why a file in composeMain can use the androidx FQN. The
+// pre-1.10 `org.jetbrains.compose.ui.tooling.preview.Preview` is deprecated.
+//
+// Previews live in the same file as the composable they render because these screens are
+// private. That is the intended shape: a preview is a second call site, not a public API, so it
+// belongs next to what it calls rather than in a previews/ package that drifts.
+//
+// FORK NOTE — what is deliberately NOT here:
+//   - HomeScreen has no preview. It resolves HomeAiBackend out of Koin, so previewing it would
+//     mean starting DI inside the IDE renderer. Preview the leaf composables a screen is built
+//     from (AiPanel.kt does) and leave the DI-wired screen to the running app.
+//   - No @PreviewLightDark. MaterialTheme here is the stock default, which does not switch on
+//     uiMode, so the two renders would be identical. Add it the moment this template's fork
+//     introduces a real light/dark colour scheme — that is when it starts catching bugs.
+//   - No @PreviewScreenSizes / @PreviewFontScale. Six and seven renders respectively; reach for
+//     them when an adaptive-layout bug actually bites, not as a default.
+
+@Preview
+@Composable
+private fun SplashScreenPreview() {
+    MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) { SplashScreen(onReady = {}) }
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenPreview() {
+    MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) { LoginScreen(onLoggedIn = {}) }
     }
 }
