@@ -234,13 +234,25 @@ style:
       # functions and Canvas draw lambdas, which carry no annotation for any ignore to match.
       # Those are NOT artefacts — `private const val NeedleRadiusFraction = 0.86f` is strictly
       # better code, and the PascalCase TopLevelPropertyNaming above makes writing it idiomatic.
+      # THE PREVIEW SET. style.UnusedPrivateFunction below carries the identical seven lines;
+      # they are two different rules so YAML cannot alias one list into both — change one, change
+      # the other. Simple names are listed first because the KMP per-source-set detekt tasks run
+      # WITHOUT type resolution, so an FQN is not guaranteed to match.
+      # BOTH Preview FQNs on purpose: this is a Compose MULTIPLATFORM template, so
+      # `org.jetbrains.compose...Preview` is the annotation :cmp-shared uses and
+      # `androidx...Preview` the one an Android-only module uses. Naming only the androidx form
+      # (as the upstream family config did, having been written in an Android-only repo) leaves
+      # the shared module uncovered the moment type resolution is unavailable.
+      # The four multipreview annotations are AndroidX's own, from ui-tooling-preview. A fork
+      # that defines its own multipreview annotation appends its SIMPLE name here; that is the
+      # only edit this block should ever need.
       - 'Preview'
+      - 'org.jetbrains.compose.ui.tooling.preview.Preview'
       - 'androidx.compose.ui.tooling.preview.Preview'
-      - 'PreviewLightDark'
-      - 'PreviewMatrix'
+      - 'PreviewScreenSizes'
       - 'PreviewFontScales'
-      - 'PreviewDevices'
-      - 'PreviewStates'
+      - 'PreviewLightDark'
+      - 'PreviewDynamicColors'
     ignoreNumbers:
       # Keep this list SHORT. Listing 0 through 10 inclusive silently exempts `if (retries > 5)`
       # and `grade >= 7`. -1/0/1/2 are detekt's defaults (identity, empty, off-by-one, halving);
@@ -302,13 +314,14 @@ style:
     ignoreAnnotated:
       # ARTEFACT: a @Preview function is invoked by the IDE and by screenshot tests, never by
       # application code. Prescribed by detekt's Compose guide.
+      # Identical to the preview set under style.MagicNumber — see the reasoning there.
       - 'Preview'
+      - 'org.jetbrains.compose.ui.tooling.preview.Preview'
       - 'androidx.compose.ui.tooling.preview.Preview'
-      - 'PreviewLightDark'
-      - 'PreviewMatrix'
+      - 'PreviewScreenSizes'
       - 'PreviewFontScales'
-      - 'PreviewDevices'
-      - 'PreviewStates'
+      - 'PreviewLightDark'
+      - 'PreviewDynamicColors'
   UnusedPrivateProperty:
     excludes: *notOurs
     allowedNames: '(_|ignored|expected|serialVersionUID)'

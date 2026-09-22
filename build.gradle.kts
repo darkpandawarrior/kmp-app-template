@@ -26,6 +26,14 @@ subprojects {
         // repo it never opened. `src` rather than an enumerated list of source sets: adding a
         // target adds a source set, and nothing fails when a list is not updated to match, so
         // coverage would shrink silently while the build stayed green.
+        //
+        // This is ALSO the whole generated-code exclusion. KSP and Compose-resources output lands
+        // under `build/generated/`, never under `src/`, so a `src`-rooted detekt cannot reach it —
+        // which is why there is no `exclude("**/build/generated/**")` here to go stale. The same
+        // globs still appear per rule in config/detekt/detekt.yml, because a fork that switches to
+        // the per-source-set `detekt*SourceSet` tasks DOES pick the generated dirs up (Gradle
+        // declares them as source) and would otherwise lint machine-written names. ktlint runs off
+        // those declared source sets already, hence its `/build/` filter above.
         source.setFrom(layout.projectDirectory.dir("src"))
     }
 }

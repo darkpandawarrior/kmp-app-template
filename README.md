@@ -125,6 +125,31 @@ scripts/customizer.sh --package com.acme.myapp --name "My App"
 Rewrites the Kotlin package, the Android `applicationId`, and the project name across the tree, and
 moves the source directories to match. Review the diff and rebuild.
 
+## Code quality
+
+detekt and ktlint are applied to every module from the root build and hook into `check`, so the
+CI gate is just `./gradlew assemble check` — there is no separate lint job to forget.
+
+```bash
+./gradlew detekt ktlintCheck    # the quality half of the gate on its own
+./gradlew ktlintFormat          # fix what is mechanically fixable
+```
+
+Two files carry the whole configuration, and every rule that is off carries the reason it is off:
+
+| File | Owns |
+|---|---|
+| `config/detekt/detekt.yml` | Rule thresholds, the `*notOurs` exclusion anchor, the `@Composable`/`@Preview` ignores. |
+| `.editorconfig` | Formatting, and `max_line_length` — the only place that number lives. |
+
+Four ktlint rules are disabled in `.editorconfig` and each one is **half a pair**: detekt turns the
+same rule off in `detekt.yml`. Change one side without the other and the two tools start
+contradicting each other. The comments name the pairing at both ends.
+
+**There is no detekt baseline here, and adding one is the wrong fix.** A baseline entry is debt that
+outlives whoever added it; this repo starts at zero findings so a fork inherits a gate that means
+something. If a rule fires, fix the code, or turn the rule off with the reason written next to it.
+
 ## Adding a new target
 
 `:cmp-shared`'s `App()` lives in a `composeMain` source set, not `commonMain`, wire a new target's
