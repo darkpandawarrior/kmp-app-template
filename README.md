@@ -15,7 +15,7 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 ![Gradle](https://img.shields.io/badge/Gradle-9.8.0--rc--2-02303A?logo=gradle&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-**[Why](#why-kmp-app-template)** · **[What's inside](#whats-inside)** · **[Run it](#run-it)** · **[Make it yours](#make-it-yours)** · **[Roadmap](#roadmap)**
+**[Why](#why-kmp-app-template)** · **[What's inside](#whats-inside)** · **[Run it](#run-it)** · **[Previews](#previews-and-live-ui-iteration)** · **[Make it yours](#make-it-yours)** · **[Roadmap](#roadmap)**
 
 **Case study:** [The KMP family](https://siddharth-pandalai.vercel.app/project/kmp-family) ([mirror](https://cv-siddharth.vercel.app/project/kmp-family)) &nbsp;·&nbsp; **Toolkit:** [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit) &nbsp;·&nbsp; **Build logic:** [kmp-build-logic](https://github.com/darkpandawarrior/kmp-build-logic) &nbsp;·&nbsp; **Sibling apps:** [Doori](https://github.com/darkpandawarrior/Doori) · [Gaddi](https://github.com/darkpandawarrior/Gaddi) · [PaymentsLab-KMP](https://github.com/darkpandawarrior/PaymentsLab-KMP) · [Candidai](https://github.com/darkpandawarrior/Candidai)
 
@@ -31,6 +31,7 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 - [What's inside](#whats-inside)
 - [Design choices](#design-choices)
 - [Run it](#run-it)
+- [Previews and live UI iteration](#previews-and-live-ui-iteration)
 - [Make it yours](#make-it-yours)
 - [Adding a new target](#adding-a-new-target)
 - [Tech stack](#tech-stack)
@@ -113,8 +114,51 @@ scripts/setup-secrets.sh              # optional: seed a local secrets.propertie
 ./gradlew :cmp-desktop:run                      # run the desktop app
 ./gradlew :cmp-android:assembleDebug            # build the Android APK
 ./gradlew :cmp-web:wasmJsBrowserDevelopmentRun   # run the web app (localhost, live reload)
+./gradlew :cmp-desktop:hotRunJvm                # run desktop with Compose Hot Reload (see below)
 open cmp-ios/iosApp.xcodeproj                   # run the iOS app from Xcode (⌘R — builds :cmp-ios first)
 ```
+
+## Previews and live UI iteration
+
+`@Preview` works in shared Compose code, and the wiring is already in place. Five previews ship as
+the worked example: two root screens in `App.kt`, three `AiPanel` states in `AiPanel.kt`.
+
+**The annotation flipped in Compose Multiplatform 1.10, and most material online predates that.**
+The multiplatform annotation is now `androidx.compose.ui.tooling.preview.Preview`, published into
+`commonMain` by `org.jetbrains.compose.ui:ui-tooling-preview`. The JetBrains-namespaced
+`org.jetbrains.compose.ui.tooling.preview.Preview` is the *deprecated* one, and the
+`expect`/`actual` "Preview shim" that 2024-era blog posts recommend is obsolete — delete it if you
+find one in a fork.
+
+**Previews need two artifacts, not one**, which is the usual reason they render nothing:
+
+| Artifact | Role | Where it goes |
+|---|---|---|
+| `org.jetbrains.compose.ui:ui-tooling-preview` | the `@Preview` **annotation** | the shared source set (`composeMain` here) |
+| `org.jetbrains.compose.ui:ui-tooling` | the **renderer** | `androidRuntimeClasspath` only |
+
+Both are in `cmp-shared/build.gradle.kts` with a fork note on each. The renderer is Android-only
+because previews are drawn by the Android preview tooling even when the composable is shared — so
+**a module whose previews you want to see must keep its Android target**, and a preview tells you
+about the *Android* rendering of shared code, never about iOS pixel fidelity.
+
+Two more things a fork should know:
+
+- **Hoist state to make a screen previewable.** `AiPanel` delegates to a private, stateless
+  `AiPanelContent(uiState, onAsk, onStop)`. That split is the only reason its three states can be
+  previewed at all: the IDE preview renderer runs no effects, so anything driven by a coroutine
+  stays stuck on its initial value. `HomeScreen` deliberately has *no* preview — it resolves its
+  backend out of Koin, and starting DI inside the renderer is not worth it. Preview the leaves.
+- **Previews are not the desktop loop.** `./gradlew :cmp-desktop:hotRunJvm` starts the desktop app
+  with Compose Hot Reload (bundled and on by default since Compose Multiplatform 1.10 — no plugin,
+  no dependency): edit a composable, save, the running UI swaps without losing state. Use previews
+  for isolated states, Hot Reload for iterating on the real screen.
+
+> **IDE note.** Preview rendering is IDE-side and gated on the IDE understanding your AGP. This
+> template pins AGP 9.5.0-alpha06, which is above the AGP ceiling of the current *stable* Android
+> Studio — the preview panel needs the canary/RC line that pairs with AGP 9.5. Do not downgrade AGP
+> or swap `com.android.kotlin.multiplatform.library` back to `com.android.library` to make the
+> panel appear; install the matching IDE instead, and use Hot Reload in the meantime.
 
 ## Make it yours
 

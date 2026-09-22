@@ -19,6 +19,17 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 # Same version kmp-toolkit's own catalog pins (external/kmp-toolkit/gradle/libs.versions.toml) —
 # the AI seam's `aiModule()` DI wiring, not published by :ai/:llm-chat as an `api` dependency.
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+# Compose previews need TWO artifacts, and they are easy to confuse:
+#   ui-tooling-preview -> the @Preview ANNOTATION. Multiplatform since Compose Multiplatform 1.10:
+#     it publishes `androidx.compose.ui.tooling.preview.Preview` into commonMain, so shared code
+#     imports the androidx FQN. `org.jetbrains.compose.ui.tooling.preview.Preview` is the
+#     DEPRECATED pre-1.10 annotation; do not reach for it, and do not add
+#     org.jetbrains.compose.components:components-ui-tooling-preview.
+#   ui-tooling        -> the RENDERER. Android-only artifact (there is no iOS/desktop/wasm preview
+#     surface in any IDE), so it goes on the Android runtime classpath only.
+# Both are versioned with Compose Multiplatform itself, not with AndroidX Compose.
+ui-tooling-preview-mp = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+ui-tooling-mp = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

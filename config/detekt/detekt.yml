@@ -236,13 +236,15 @@ style:
       # better code, and the PascalCase TopLevelPropertyNaming above makes writing it idiomatic.
       # THE PREVIEW SET. style.UnusedPrivateFunction below carries the identical seven lines;
       # they are two different rules so YAML cannot alias one list into both — change one, change
-      # the other. Simple names are listed first because the KMP per-source-set detekt tasks run
-      # WITHOUT type resolution, so an FQN is not guaranteed to match.
-      # BOTH Preview FQNs on purpose: this is a Compose MULTIPLATFORM template, so
-      # `org.jetbrains.compose...Preview` is the annotation :cmp-shared uses and
-      # `androidx...Preview` the one an Android-only module uses. Naming only the androidx form
-      # (as the upstream family config did, having been written in an Android-only repo) leaves
-      # the shared module uncovered the moment type resolution is unavailable.
+      # the other.
+      # BOTH Preview FQNs on purpose, but note WHICH is which — this flipped in Compose
+      # Multiplatform 1.10 and most material on the web still describes the old world.
+      # `androidx.compose.ui.tooling.preview.Preview` is now THE multiplatform annotation: it is
+      # published into commonMain by org.jetbrains.compose.ui:ui-tooling-preview, and it is what
+      # :cmp-shared's composeMain previews import. `org.jetbrains.compose.ui.tooling.preview.Preview`
+      # is the DEPRECATED pre-1.10 annotation, kept here only so a fork that still carries an
+      # un-migrated file is covered. Simple names are listed first because the KMP per-source-set
+      # detekt tasks run WITHOUT type resolution, so an FQN is not guaranteed to match.
       # The four multipreview annotations are AndroidX's own, from ui-tooling-preview. A fork
       # that defines its own multipreview annotation appends its SIMPLE name here; that is the
       # only edit this block should ever need.
@@ -250,7 +252,7 @@ style:
       - 'org.jetbrains.compose.ui.tooling.preview.Preview'
       - 'androidx.compose.ui.tooling.preview.Preview'
       - 'PreviewScreenSizes'
-      - 'PreviewFontScales'
+      - 'PreviewFontScale'
       - 'PreviewLightDark'
       - 'PreviewDynamicColors'
     ignoreNumbers:
@@ -319,7 +321,7 @@ style:
       - 'org.jetbrains.compose.ui.tooling.preview.Preview'
       - 'androidx.compose.ui.tooling.preview.Preview'
       - 'PreviewScreenSizes'
-      - 'PreviewFontScales'
+      - 'PreviewFontScale'
       - 'PreviewLightDark'
       - 'PreviewDynamicColors'
   UnusedPrivateProperty:

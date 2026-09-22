@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.siddharth.kmp.ai.OnDeviceLlm
 import com.siddharth.kmp.llmchat.AiConfig
@@ -115,16 +116,36 @@ fun AiPanel(
     modifier: Modifier = Modifier,
 ) {
     val uiState by state.state.collectAsState()
+    AiPanelContent(uiState, onAsk = state::ask, onStop = state::stop, modifier = modifier)
+}
+
+/**
+ * The panel's UI with no [AiPanelState] behind it, so every branch below is reachable from a
+ * `@Preview` by passing a plain [AiPanelUiState]. Splitting stateless content out of the
+ * state-holding wrapper is the only reason the previews at the bottom of this file can exist:
+ * [AiPanelState] resolves a real backend and updates itself from a coroutine, and the IDE preview
+ * renderer runs no effects, so a preview built on it would be stuck on "Checking AI availability…"
+ * forever. Hoist the state, preview the content.
+ */
+@Composable
+private fun AiPanelContent(
+    uiState: AiPanelUiState,
+    onAsk: (String) -> Unit,
+    onStop: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var prompt by remember { mutableStateOf("") }
+    // Bound once so the branches below smart-cast instead of repeating `uiState.capabilities?.`.
+    val caps = uiState.capabilities
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("Ask AI", style = MaterialTheme.typography.titleMedium)
         when {
-            uiState.capabilities == null ->
+            caps == null ->
                 Text("Checking AI availability…", style = MaterialTheme.typography.bodySmall)
-            uiState.capabilities?.unavailableReason != null ->
+            caps.unavailableReason != null ->
                 Text(
-                    "AI is off on this build (${uiState.capabilities?.unavailableReason?.label()}). " +
+                    "AI is off on this build (${caps.unavailableReason?.label()}). " +
                         "Add a provider key in Settings to enable it.",
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -137,13 +158,13 @@ fun AiPanel(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = { state.ask(prompt) }, enabled = !uiState.isStreaming && prompt.isNotBlank()) {
+                    Button(onClick = { onAsk(prompt) }, enabled = !uiState.isStreaming && prompt.isNotBlank()) {
                         Text("Ask")
                     }
                     // Stopping only makes sense for a backend that genuinely streams — a
                     // non-streaming reply already finished before it appeared.
-                    if (uiState.isStreaming && uiState.capabilities?.streaming == true) {
-                        TextButton(onClick = { state.stop() }) { Text("Stop") }
+                    if (uiState.isStreaming && caps.streaming) {
+                        TextButton(onClick = onStop) { Text("Stop") }
                     }
                 }
                 if (uiState.answer.isNotBlank() || uiState.isStreaming) {
@@ -165,3 +186,53 @@ private fun AiFailure.label(): String =
         AiFailure.NotSupportedOnPlatform -> "not supported on this platform"
         AiFailure.EmptyReply -> "model returned no reply"
     }
+
+// ---- Previews -------------------------------------------------------------------------------
+//
+// Three previews, one per branch of AiPanelContent's `when`: not-yet-known, unavailable, ready.
+// They cover the states that are easy to get wrong and impossible to see in the running app
+// (a fresh fork ships no provider key, so only the NoKey branch ever renders for real).
+//
+// FORK NOTE: previews render through the ANDROID preview tooling even here in shared code, so
+// this module needs its Android target and the ui-tooling renderer — see cmp-shared/build.gradle.kts.
+
+private val READY_CAPS =
+    AiCapabilities(streaming = true, multimodal = false, honoredConfigFields = emptySet(), unavailableReason = null)
+
+@Preview
+@Composable
+private fun AiPanelCheckingPreview() {
+    MaterialTheme { AiPanelContent(AiPanelUiState(), onAsk = {}, onStop = {}) }
+}
+
+@Preview
+@Composable
+private fun AiPanelNoKeyPreview() {
+    MaterialTheme {
+        AiPanelContent(
+            AiPanelUiState(
+                capabilities =
+                    AiCapabilities(
+                        streaming = false,
+                        multimodal = false,
+                        honoredConfigFields = emptySet(),
+                        unavailableReason = AiFailure.NoKey,
+                    ),
+            ),
+            onAsk = {},
+            onStop = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AiPanelStreamingPreview() {
+    MaterialTheme {
+        AiPanelContent(
+            AiPanelUiState(capabilities = READY_CAPS, answer = "Kotlin Multiplatform shares", isStreaming = true),
+            onAsk = {},
+            onStop = {},
+        )
+    }
+}
