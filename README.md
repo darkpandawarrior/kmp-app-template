@@ -9,10 +9,12 @@ family: one shared Compose UI, a wired root-navigation scaffold, and thin Androi
 Web shells, nothing you have to delete before you begin. The reusable *library* pieces live in
 `kmp-toolkit`; this repo is the reusable *app shape*.
 
+<!-- AUTOGEN:versions -->
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20-7F52FF?logo=kotlin&logoColor=white)
 ![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.13.0--alpha01-4285F4?logo=jetpackcompose&logoColor=white)
-![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20Desktop%20%7C%20iOS%20%7C%20Web-3DDC84)
 ![Gradle](https://img.shields.io/badge/Gradle-9.8.0--rc--2-02303A?logo=gradle&logoColor=white)
+<!-- /AUTOGEN:versions -->
+![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20Desktop%20%7C%20iOS%20%7C%20Web-3DDC84)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 **[Why](#why-kmp-app-template)** · **[What's inside](#whats-inside)** · **[Run it](#run-it)** · **[Previews](#previews-and-live-ui-iteration)** · **[Make it yours](#make-it-yours)** · **[Roadmap](#roadmap)**
@@ -170,6 +172,15 @@ Rewrites the Kotlin package, the Android `applicationId`, and the project name a
 moves the source directories to match. Review the diff and rebuild.
 
 ## Code quality
+
+The README's Kotlin, Compose Multiplatform and Gradle badges are **generated**, not typed:
+`scripts/gen-readme.sh` rewrites the `<!-- AUTOGEN:versions -->` span from
+`gradle/libs.versions.toml` and the Gradle wrapper, and CI fails a change that leaves them stale.
+Measured across this family before the script existed, six of nine repos were advertising a Kotlin
+RC and a Compose Multiplatform version a full minor behind their own catalog — a badge renders as
+authority and nothing in a build ever checks it. A fork adds a badge by adding a line to the script;
+a badge with no source of truth in the repo (the platform list, the licence) stays outside the span.
+
 
 detekt and ktlint are applied to every module from the root build and hook into `check`, so the
 CI gate is just `./gradlew assemble check` — there is no separate lint job to forget.

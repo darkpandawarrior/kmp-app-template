@@ -24,5 +24,15 @@ jobs:
           scripts/test-check-ai-wiring.sh
           scripts/check-ai-wiring.sh
 
+      # The README's version badges are generated from gradle/libs.versions.toml and the Gradle
+      # wrapper, not typed. A generator with no gate is worse than hand-written prose, because the
+      # marker comment tells every future reader the block is trustworthy — so verify, here, before
+      # the expensive step.
+      - name: README version badges are current
+        run: |
+          ./scripts/gen-readme.sh
+          git diff --exit-code -- README.md \
+            || { echo "::error::README badges are stale. Run ./scripts/gen-readme.sh and commit."; exit 1; }
+
       - name: Gradle
         run: ./gradlew assemble check
