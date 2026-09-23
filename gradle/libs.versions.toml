@@ -8,7 +8,7 @@ koin = "4.2.2"
 android-compileSdk = "37"
 android-minSdk = "26"
 android-targetSdk = "37"
-# Code quality. Same pins as the rest of the family (PaymentsLab, HireSignal, Ghar, Mileway).
+# Code quality. Same pins as the rest of the family (PaymentsLab-KMP, Candidai, Ghar, Doori).
 detekt = "2.0.0-alpha.6"
 ktlint-plugin = "14.2.0"
 
