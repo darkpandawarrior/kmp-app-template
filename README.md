@@ -107,9 +107,14 @@ at all.
 
 ## Run it
 
+Clone with submodules (`git clone --recurse-submodules`) or run
+`git submodule update --init --recursive` in an existing checkout. Use JDK 21 and an
+Android SDK; the iOS target also needs macOS and Xcode.
+
 ```bash
 # One-time: point Gradle at your Android SDK (local.properties is gitignored).
-echo "sdk.dir=$HOME/Library/Android/sdk" > local.properties
+# Add sdk.dir to local.properties without replacing existing settings.
+# Example on macOS: sdk.dir=/Users/you/Library/Android/sdk
 
 scripts/setup-secrets.sh              # optional: seed a local secrets.properties
 
@@ -119,6 +124,26 @@ scripts/setup-secrets.sh              # optional: seed a local secrets.propertie
 ./gradlew :cmp-desktop:hotRunJvm                # run desktop with Compose Hot Reload (see below)
 open cmp-ios/iosApp.xcodeproj                   # run the iOS app from Xcode (⌘R — builds :cmp-ios first)
 ```
+
+## Reproduce the sample
+
+Run `./gradlew :cmp-desktop:run` for the local demo. The splash opens the sign-in
+screen; Continue opens Home, and Sign out returns to sign-in. Continue is navigation
+scaffolding, not account authentication. The Home AI panel reports unavailable
+credentials or backend capability explicitly; no key is needed to inspect the UI.
+See [AI wiring](docs/ai-wiring.md) before configuring a real backend.
+
+The repository is an app template, with runnable platform shells. It does not
+publish a hosted demo or a store app.
+
+```bash
+scripts/test-check-ai-wiring.sh   # exercise the wiring guard's failure cases
+scripts/check-ai-wiring.sh        # check the current source wiring
+./gradlew :cmp-shared:jvmTest     # no-key state, streaming, cancellation
+./gradlew assemble check          # full CI gate (macOS for Apple targets)
+```
+
+The AI state tests use a scripted backend and make no paid model requests.
 
 ## Previews and live UI iteration
 
