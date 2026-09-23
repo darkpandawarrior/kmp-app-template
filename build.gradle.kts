@@ -37,3 +37,8 @@ subprojects {
         source.setFrom(layout.projectDirectory.dir("src"))
     }
 }
+
+// Ktor pins vulnerable ws 8.20.1; retain the patched version when regenerating Yarn locks.
+plugins.withType<org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin> {
+    the<org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension>().resolution("ws", "8.21.0")
+}
