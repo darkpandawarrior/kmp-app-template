@@ -79,3 +79,24 @@ beyond that.
 - This file is a starter. When a project is created from the template, rewrite it first, then build.
 - The code wins on any value here. If a hex differs, fix this file.
 - Run the `antislop` skill as the filter on any UI diff and report its Delivery Gate result.
+
+## Changelog
+
+| Date | Change | Why | Source |
+|---|---|---|---|
+| 2026-10-09 | Initial version, distilled from the code token files and existing design docs | Establish design direction for agents | DESIGN.md rollout |
+
+## Open questions
+
+- TBD: product, audience and visual reference.
+- TBD: dial values for ENERGY, RHYTHM and MOTION.
+- TBD: primary, background, surface and error colour values.
+- TBD: typography families, role mapping and bundled fonts.
+- TBD: app-specific breakpoints and density.
+- TBD: card and floating-layer policy if the app departs from the toolkit default.
+- TBD: shapes if the app defines its own Shapes.
+- TBD: motion beyond the toolkit buckets.
+
+## Evolving this file
+
+Agents: when you change UI and find this file wrong or silent, fix it in the same change and add a Changelog row. Code token files win over this file; when they disagree, correct the doc. A user correction of a visual choice with a stated reason becomes a rule here immediately. Lessons that apply beyond this repo go to the LEARNINGS log of the `design-md` skill in AgentHarness.
