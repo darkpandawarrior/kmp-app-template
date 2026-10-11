@@ -182,7 +182,7 @@ Two more things a fork should know:
   for isolated states, Hot Reload for iterating on the real screen.
 
 > **IDE note.** Preview rendering is IDE-side and gated on the IDE understanding your AGP. This
-> template pins AGP 9.5.0-alpha06, which is above the AGP ceiling of the current *stable* Android
+> template pins AGP 9.5.0-alpha08, which is above the AGP ceiling of the current *stable* Android
 > Studio — the preview panel needs the canary/RC line that pairs with AGP 9.5. Do not downgrade AGP
 > or swap `com.android.kotlin.multiplatform.library` back to `com.android.library` to make the
 > panel appear; install the matching IDE instead, and use Hot Reload in the meantime.
@@ -244,7 +244,7 @@ doesn't (yet), the target still gets `commonMain` for shared non-UI logic, see t
 |---|---|
 | **Language** | Kotlin 2.4.20 |
 | **UI** | Compose Multiplatform 1.13.0-alpha01 |
-| **Build** | AGP 9.5.0-alpha06 · Gradle 9.8.0-rc-2 |
+| **Build** | AGP 9.5.0-alpha08 · Gradle 9.8.0 |
 | **Targets** | Android · Desktop (JVM) · iOS (arm64, simulatorArm64, x64) · Web (wasmJs) · watchOS (arm64, simulatorArm64, x64) |
 | **License** | MIT |
 
