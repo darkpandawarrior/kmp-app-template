@@ -5,37 +5,54 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.siddharth.apptemplate.shared.ai.AiPanel
 import com.siddharth.apptemplate.shared.ai.AiPanelState
 import com.siddharth.apptemplate.shared.ai.HomeAiBackend
 import com.siddharth.apptemplate.shared.di.aiModule
-import kotlinx.coroutines.delay
+import com.siddharth.apptemplate.shared.theme.AppTheme
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
 
 /**
  * The single Compose entry point every platform renders. Android's MainActivity, the desktop `main`,
  * an iOS UIViewController, and a wasm `main` all just call [App] — keep platform code to the shell.
+ * [dynamicColorScheme] lets a shell supply a platform colour scheme (Android 12+ dynamic colour).
  * Starting Koin here too (guarded, since every platform calls [App] exactly once per process) keeps
  * DI bootstrap out of five separate per-platform entry points for one small [aiModule].
  */
 @Composable
-fun App() {
+fun App(dynamicColorScheme: @Composable (dark: Boolean) -> ColorScheme? = { null }) {
     remember { AppKoin.ensureStarted() }
-    MaterialTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
+    AppTheme(dynamicColorScheme = dynamicColorScheme) {
+        // The Surface paints edge to edge (behind the system bars); safeDrawingPadding() on the
+        // content keeps text and controls out from under the status/navigation bars, the notch,
+        // the iOS home indicator and the IME. Android's MainActivity calls enableEdgeToEdge().
+        Surface(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
             val nav = remember { RootNavState() }
             when (nav.current) {
                 RootDestination.Splash -> SplashScreen(onReady = { nav.onSplashComplete() })
@@ -59,30 +76,49 @@ private object AppKoin {
 
 @Composable
 private fun SplashScreen(onReady: () -> Unit) {
-    LaunchedEffect(Unit) {
-        delay(800)
-        onReady()
-    }
-    Centered { Text("kmp-app-template", style = MaterialTheme.typography.headlineMedium) }
+    // No fixed delay: route as soon as the (here, instant) auth check is done. A real app waits on
+    // its session restore here, and on Android drives the system splash via installSplashScreen().
+    LaunchedEffect(Unit) { onReady() }
+    Centered { Text(AppName, style = MaterialTheme.typography.headlineMedium) }
 }
 
 @Composable
 private fun LoginScreen(onLoggedIn: () -> Unit) {
     Centered {
-        Text("Sign in", style = MaterialTheme.typography.headlineSmall)
+        Text("Sign in", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
         Button(onClick = onLoggedIn, modifier = Modifier.padding(top = 16.dp)) { Text("Continue") }
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun HomeScreen(onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
     val panelState = remember { AiPanelState(AppKoin.ensureStarted().get<HomeAiBackend>(), scope) }
-    Centered {
-        Text("Home", style = MaterialTheme.typography.headlineSmall)
+    var confirmSignOut by remember { mutableStateOf(false) }
+    // The sample dismissable state: Back on Home asks before signing out instead of leaving the app.
+    // While the dialog is open Back dismisses the dialog itself, so this handler is disabled then.
+    // Compose's BackHandler registers with the platform dispatcher, so Android 13+ predictive back
+    // (enableOnBackInvokedCallback in the manifest) animates it.
+    BackHandler(enabled = !confirmSignOut) { confirmSignOut = true }
+    if (confirmSignOut) {
+        AlertDialog(
+            onDismissRequest = { confirmSignOut = false },
+            title = { Text("Sign out?") },
+            confirmButton = { TextButton(onClick = onLogout) { Text("Sign out") } },
+            dismissButton = { TextButton(onClick = { confirmSignOut = false }) { Text("Stay") } },
+        )
+    }
+    // Scrolls so a long streamed answer or the keyboard never pushes "Sign out" out of reach; the
+    // IME inset is already consumed by safeDrawingPadding() at the root.
+    Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Home", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
         Text("You're signed in.", modifier = Modifier.padding(top = 8.dp))
         AiPanel(panelState, modifier = Modifier.padding(top = 16.dp))
-        Button(onClick = onLogout, modifier = Modifier.padding(top = 16.dp)) { Text("Sign out") }
+        Button(onClick = { confirmSignOut = true }, modifier = Modifier.padding(top = 16.dp)) { Text("Sign out") }
     }
 }
 
@@ -111,24 +147,22 @@ private fun Centered(content: @Composable () -> Unit) {
 //   - HomeScreen has no preview. It resolves HomeAiBackend out of Koin, so previewing it would
 //     mean starting DI inside the IDE renderer. Preview the leaf composables a screen is built
 //     from (AiPanel.kt does) and leave the DI-wired screen to the running app.
-//   - No @PreviewLightDark. MaterialTheme here is the stock default, which does not switch on
-//     uiMode, so the two renders would be identical. Add it the moment this template's fork
-//     introduces a real light/dark colour scheme — that is when it starts catching bugs.
+//   - Previews go through AppTheme, which follows the system, so @PreviewLightDark renders both.
 //   - No @PreviewScreenSizes / @PreviewFontScale. Six and seven renders respectively; reach for
 //     them when an adaptive-layout bug actually bites, not as a default.
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun SplashScreenPreview() {
-    MaterialTheme {
+    AppTheme {
         Surface(modifier = Modifier.fillMaxSize()) { SplashScreen(onReady = {}) }
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun LoginScreenPreview() {
-    MaterialTheme {
+    AppTheme {
         Surface(modifier = Modifier.fillMaxSize()) { LoginScreen(onLoggedIn = {}) }
     }
 }

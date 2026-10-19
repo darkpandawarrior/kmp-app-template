@@ -80,9 +80,12 @@ kotlin {
                     // publishes for the targets Compose Multiplatform itself supports (android,
                     // jvm, iosArm64, iosSimulatorArm64, wasmJs) — exactly composeMain's target set.
                     implementation(libs.ui.tooling.preview.mp)
+                    // Common BackHandler (predictive back on Android 13+, iOS edge swipe); not part of compose.ui.
+                    implementation(libs.ui.backhandler.mp)
                     implementation("com.siddharth.kmp:ai:1.0.0")
                     implementation("com.siddharth.kmp:llm-chat:1.0.0")
                     implementation("com.siddharth.kmp:result:1.0.0")
+                    implementation("com.siddharth.kmp:designsystem:1.0.0")
                     implementation(libs.koin.core)
                 }
             }

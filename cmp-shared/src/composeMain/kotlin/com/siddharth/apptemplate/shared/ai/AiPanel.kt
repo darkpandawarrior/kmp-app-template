@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.siddharth.apptemplate.shared.theme.AppTheme
 import com.siddharth.kmp.ai.OnDeviceLlm
 import com.siddharth.kmp.llmchat.AiConfig
 import com.siddharth.kmp.llmchat.AiMessage
@@ -202,13 +203,13 @@ private val READY_CAPS =
 @Preview
 @Composable
 private fun AiPanelCheckingPreview() {
-    MaterialTheme { AiPanelContent(AiPanelUiState(), onAsk = {}, onStop = {}) }
+    AppTheme { AiPanelContent(AiPanelUiState(), onAsk = {}, onStop = {}) }
 }
 
 @Preview
 @Composable
 private fun AiPanelNoKeyPreview() {
-    MaterialTheme {
+    AppTheme {
         AiPanelContent(
             AiPanelUiState(
                 capabilities =
@@ -228,7 +229,7 @@ private fun AiPanelNoKeyPreview() {
 @Preview
 @Composable
 private fun AiPanelStreamingPreview() {
-    MaterialTheme {
+    AppTheme {
         AiPanelContent(
             AiPanelUiState(capabilities = READY_CAPS, answer = "Kotlin Multiplatform shares", isStreaming = true),
             onAsk = {},

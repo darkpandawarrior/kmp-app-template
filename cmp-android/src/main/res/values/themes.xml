@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window theme: the background is what shows before Compose paints. Light here, dark in
+         values-night, so a dark-mode cold start does not flash white. Bars are made transparent by
+         enableEdgeToEdge() in MainActivity. -->
+    <style name="Theme.App" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#FFFEF7FF</item>
+    </style>
+</resources>

@@ -29,6 +29,7 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 #     surface in any IDE), so it goes on the Android runtime classpath only.
 # Both are versioned with Compose Multiplatform itself, not with AndroidX Compose.
 ui-tooling-preview-mp = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+ui-backhandler-mp = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
 ui-tooling-mp = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
 
 [plugins]
