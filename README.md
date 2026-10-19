@@ -194,7 +194,16 @@ scripts/customizer.sh --package com.acme.myapp --name "My App"
 ```
 
 Rewrites the Kotlin package, the Android `applicationId`, and the project name across the tree, and
-moves the source directories to match. Review the diff and rebuild.
+moves the source directories to match. It rewrites every text file (not an extension allowlist),
+including the Android label, desktop title, web title and the desktop installer name, and exits
+non-zero if any template identifier is left behind. Review the diff and rebuild.
+
+## Standards
+
+UX standards live in [`DESIGN.md`](DESIGN.md#standards): edge-to-edge, predictive back, dark theme
+and reduced motion are wired in the sample app. Reference library:
+`~/Tools/DevTools/AgentHarness/docs/design-references/`. Rule: no new screen, flow or motion
+without 2-3 real-app references.
 
 ## Code quality
 

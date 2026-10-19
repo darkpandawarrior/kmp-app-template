@@ -11,15 +11,16 @@
 
 The template ships no brand. `App()` in
 `cmp-shared/src/composeMain/kotlin/com/siddharth/apptemplate/shared/App.kt` wraps the screens in a
-stock `MaterialTheme { }` (the Material 3 default scheme, which does not switch to dark by itself)
-over a Splash, Login, Home flow. A real app should state here, in two or three sentences, what it
+`AppTheme` (`shared/theme/Theme.kt`: Material 3 baseline light and dark schemes that follow the
+system, Android 12+ dynamic colour, and the toolkit `LocalReducedMotion`) over a Splash, Login, Home
+flow. A real app should state here, in two or three sentences, what it
 is, who uses it, and one specific visual reference. Avoid "modern, clean, premium".
 
 TBD (product, audience, reference).
 
 ## Colors
 
-Currently the stock Material 3 baseline scheme; there are no custom colours in the template.
+Currently the stock Material 3 baseline light and dark schemes; there are no custom colours in the template.
 Define the app palette as a `ColorScheme` in a theme file (for example
 `cmp-shared/src/composeMain/kotlin/<package>/theme/Theme.kt`) and fill this table from it with real
 values only:
@@ -66,11 +67,24 @@ Start from the toolkit primitives (`SectionCard`, `PageHeader`, `TagChip`, `Load
 Toolkit motion buckets (90, 160, 240, 360 ms) and `screenEnter` / `screenExit`. TBD for anything
 beyond that.
 
+## Standards
+
+New apps start from these; they are not optional polish.
+
+- Reference library: `~/Tools/DevTools/AgentHarness/docs/design-references/` (real-app teardowns per
+  pattern). Read the entries for your screen type before designing.
+- **Rule: no new screen, flow or motion without 2-3 real-app references**, named in the PR body (and
+  here, under Overview, for the product's visual reference). "Looks modern" is not a reference.
+- Already wired by the template, do not regress: edge-to-edge with `safeDrawingPadding()` insets,
+  predictive back (`enableOnBackInvokedCallback` + Compose `BackHandler`), system dark theme,
+  `LocalReducedMotion` from the platform setting (best-effort mapping, see `AppTheme` KDoc), 48dp
+  touch targets and haptics from `kmp-toolkit:designsystem`.
+
 ## Do's and Don'ts
 
 - Do define the theme once, in one file, and have this file point at it.
 - Do take spacing, radius and duration from the toolkit tokens.
-- Do add a dark scheme and wire `ThemeController`; the stock theme does not follow the system.
+- Do keep dark mode working: `AppTheme` follows the system; add `ThemeController` only if the app needs an in-app override.
 - Don't copy hex values into this file by hand without reading them from the theme file.
 - Don't ship the template's stock look: replace it with a real direction.
 
