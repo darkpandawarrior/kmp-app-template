@@ -10,8 +10,8 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 `kmp-toolkit`; this repo is the reusable *app shape*.
 
 <!-- AUTOGEN:versions -->
-![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20-7F52FF?logo=kotlin&logoColor=white)
-![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.13.0--alpha01-4285F4?logo=jetpackcompose&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4.21-7F52FF?logo=kotlin&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.13.0--alpha02-4285F4?logo=jetpackcompose&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-9.8.0-02303A?logo=gradle&logoColor=white)
 <!-- /AUTOGEN:versions -->
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20Desktop%20%7C%20iOS%20%7C%20Web-3DDC84)
