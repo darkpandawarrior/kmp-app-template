@@ -6,10 +6,14 @@ plugins {
 
 android {
     namespace = "com.siddharth.apptemplate.android"
-    compileSdk =
-        libs.versions.android.compileSdk
-            .get()
-            .toInt()
+    compileSdk {
+        version =
+            release(
+                libs.versions.android.compileSdk
+                    .get()
+                    .toInt(),
+            ) { minorApiLevel = 1 }
+    }
 
     defaultConfig {
         applicationId = "com.siddharth.apptemplate.android"
