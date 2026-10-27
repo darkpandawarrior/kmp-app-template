@@ -76,7 +76,7 @@ shape* they slot into. Its bigger siblings, [Doori](https://github.com/darkpanda
 [PaymentsLab-KMP](https://github.com/darkpandawarrior/PaymentsLab-KMP) and
 [Candidai](https://github.com/darkpandawarrior/Candidai), are what a real app grown from this seed
 looks like. All four, `kmp-toolkit` and `kmp-build-logic` build against the same version triple as
-this template — see [Tech stack](#tech-stack) — since Gradle requires an included build's plugin
+this template (see [Tech stack](#tech-stack)) since Gradle requires an included build's plugin
 versions to match the root's; a repo that drifts from the triple can't resolve the toolkit composite
 at all.
 
@@ -88,7 +88,7 @@ at all.
 | `:cmp-android` | The Android app shell, `MainActivity` calls `App()`. |
 | `:cmp-desktop` | The Desktop app shell, `main()` opens a `Window { App() }`. |
 | `:cmp-web` | The wasmJs browser shell, `main()` calls `ComposeViewport { App() }`; `index.html` loads the bundle. |
-| `:cmp-ios` | The iOS app shell, in two halves. The Gradle module is the umbrella that exports `:cmp-shared` into a single static `ComposeApp.framework`, and owns `MainViewController()` — the `ComposeUIViewController { App() }` entry point. Alongside it, `cmp-ios/iosApp.xcodeproj` is the Xcode app that builds that framework from a build phase and links it. |
+| `:cmp-ios` | The iOS app shell, in two halves. The Gradle module is the umbrella that exports `:cmp-shared` into a single static `ComposeApp.framework`, and owns `MainViewController()`: the `ComposeUIViewController { App() }` entry point. Alongside it, `cmp-ios/iosApp.xcodeproj` is the Xcode app that builds that framework from a build phase and links it. |
 
 ## Design choices
 
@@ -122,7 +122,7 @@ scripts/setup-secrets.sh              # optional: seed a local secrets.propertie
 ./gradlew :cmp-android:assembleDebug            # build the Android APK
 ./gradlew :cmp-web:wasmJsBrowserDevelopmentRun   # run the web app (localhost, live reload)
 ./gradlew :cmp-desktop:hotRunJvm                # run desktop with Compose Hot Reload (see below)
-open cmp-ios/iosApp.xcodeproj                   # run the iOS app from Xcode (⌘R — builds :cmp-ios first)
+open cmp-ios/iosApp.xcodeproj                   # run the iOS app from Xcode (⌘R, builds :cmp-ios first)
 ```
 
 ## Reproduce the sample
@@ -154,7 +154,7 @@ the worked example: two root screens in `App.kt`, three `AiPanel` states in `AiP
 The multiplatform annotation is now `androidx.compose.ui.tooling.preview.Preview`, published into
 `commonMain` by `org.jetbrains.compose.ui:ui-tooling-preview`. The JetBrains-namespaced
 `org.jetbrains.compose.ui.tooling.preview.Preview` is the *deprecated* one, and the
-`expect`/`actual` "Preview shim" that 2024-era blog posts recommend is obsolete — delete it if you
+`expect`/`actual` "Preview shim" that 2024-era blog posts recommend is obsolete. Delete it if you
 find one in a fork.
 
 **Previews need two artifacts, not one**, which is the usual reason they render nothing:
@@ -165,7 +165,7 @@ find one in a fork.
 | `org.jetbrains.compose.ui:ui-tooling` | the **renderer** | `androidRuntimeClasspath` only |
 
 Both are in `cmp-shared/build.gradle.kts` with a fork note on each. The renderer is Android-only
-because previews are drawn by the Android preview tooling even when the composable is shared — so
+because previews are drawn by the Android preview tooling even when the composable is shared, so
 **a module whose previews you want to see must keep its Android target**, and a preview tells you
 about the *Android* rendering of shared code, never about iOS pixel fidelity.
 
@@ -174,16 +174,16 @@ Two more things a fork should know:
 - **Hoist state to make a screen previewable.** `AiPanel` delegates to a private, stateless
   `AiPanelContent(uiState, onAsk, onStop)`. That split is the only reason its three states can be
   previewed at all: the IDE preview renderer runs no effects, so anything driven by a coroutine
-  stays stuck on its initial value. `HomeScreen` deliberately has *no* preview — it resolves its
+  stays stuck on its initial value. `HomeScreen` deliberately has *no* preview. It resolves its
   backend out of Koin, and starting DI inside the renderer is not worth it. Preview the leaves.
 - **Previews are not the desktop loop.** `./gradlew :cmp-desktop:hotRunJvm` starts the desktop app
-  with Compose Hot Reload (bundled and on by default since Compose Multiplatform 1.10 — no plugin,
+  with Compose Hot Reload (bundled and on by default since Compose Multiplatform 1.10, no plugin,
   no dependency): edit a composable, save, the running UI swaps without losing state. Use previews
   for isolated states, Hot Reload for iterating on the real screen.
 
 > **IDE note.** Preview rendering is IDE-side and gated on the IDE understanding your AGP. This
 > template pins AGP 9.5.0-alpha06, which is above the AGP ceiling of the current *stable* Android
-> Studio — the preview panel needs the canary/RC line that pairs with AGP 9.5. Do not downgrade AGP
+> Studio. The preview panel needs the canary/RC line that pairs with AGP 9.5. Do not downgrade AGP
 > or swap `com.android.kotlin.multiplatform.library` back to `com.android.library` to make the
 > panel appear; install the matching IDE instead, and use Hot Reload in the meantime.
 
@@ -211,13 +211,13 @@ The README's Kotlin, Compose Multiplatform and Gradle badges are **generated**, 
 `scripts/gen-readme.sh` rewrites the `<!-- AUTOGEN:versions -->` span from
 `gradle/libs.versions.toml` and the Gradle wrapper, and CI fails a change that leaves them stale.
 Measured across this family before the script existed, six of nine repos were advertising a Kotlin
-RC and a Compose Multiplatform version a full minor behind their own catalog — a badge renders as
+RC and a Compose Multiplatform version a full minor behind their own catalog. A badge renders as
 authority and nothing in a build ever checks it. A fork adds a badge by adding a line to the script;
 a badge with no source of truth in the repo (the platform list, the licence) stays outside the span.
 
 
 detekt and ktlint are applied to every module from the root build and hook into `check`, so the
-CI gate is just `./gradlew assemble check` — there is no separate lint job to forget.
+CI gate is just `./gradlew assemble check`. There is no separate lint job to forget.
 
 ```bash
 ./gradlew detekt ktlintCheck    # the quality half of the gate on its own
@@ -229,7 +229,7 @@ Two files carry the whole configuration, and every rule that is off carries the 
 | File | Owns |
 |---|---|
 | `config/detekt/detekt.yml` | Rule thresholds, the `*notOurs` exclusion anchor, the `@Composable`/`@Preview` ignores. |
-| `.editorconfig` | Formatting, and `max_line_length` — the only place that number lives. |
+| `.editorconfig` | Formatting, and `max_line_length`: the only place that number lives. |
 
 Four ktlint rules are disabled in `.editorconfig` and each one is **half a pair**: detekt turns the
 same rule off in `detekt.yml`. Change one side without the other and the two tools start
@@ -263,7 +263,7 @@ doesn't (yet), the target still gets `commonMain` for shared non-UI logic, see t
 - [ ] Optional Koin DI + retained-ViewModel variant of the nav scaffold
 - [ ] `navigation-compose` back-stack variant
 - [x] A GitHub Actions build workflow (see [`ci.yml`](.github/workflows/ci.yml))
-- [x] Wire in a `kmp-toolkit` module or two as a worked example — `:ai`/`:llm-chat`/`:result`,
+- [x] Wire in a `kmp-toolkit` module or two as a worked example: `:ai`/`:llm-chat`/`:result`,
       the Home screen's "Ask AI" panel (see [`AiPanel.kt`](cmp-shared/src/composeMain/kotlin/com/siddharth/apptemplate/shared/ai/AiPanel.kt))
 - [x] Grep-based guard so a forked app can't ship an unreachable AI endpoint or engine module
       (see [`docs/ai-wiring.md`](docs/ai-wiring.md))
