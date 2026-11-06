@@ -56,7 +56,6 @@ kotlin {
     // watchOS artifacts at all. Ready for shared non-UI logic (commonMain); no UI shell.
     watchosArm64()
     watchosSimulatorArm64()
-    watchosX64()
 
     sourceSets {
         commonMain.dependencies {
