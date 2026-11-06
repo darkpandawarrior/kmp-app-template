@@ -54,7 +54,7 @@ Web shells, nothing you have to delete before you begin. The reusable *library* 
 | iOS | `iosArm64`, `iosSimulatorArm64` | ✅ | `:cmp-ios` builds `ComposeApp.framework`; `cmp-ios/iosApp.xcodeproj` links it (real device + Apple Silicon sim) |
 | iOS (Intel sim) | `iosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform 1.13.0-alpha01 ships no iosX64 artifacts |
 | Web | `wasmJs` | ✅ | `:cmp-web:wasmJsBrowserDevelopmentRun` |
-| watchOS | `watchosArm64`, `watchosSimulatorArm64`, `watchosX64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform ships no watchOS artifacts at all |
+| watchOS | `watchosArm64`, `watchosSimulatorArm64` | ❌ | compiles as a bare Kotlin/Native target, Compose Multiplatform ships no watchOS artifacts at all |
 
 `App()` (the shared Compose UI) lives in `:cmp-shared`'s `composeMain` source set, which is only wired
 to the targets Compose Multiplatform actually supports. iosX64 and watchOS get `commonMain` only
@@ -84,7 +84,7 @@ at all.
 
 | Module | What it is |
 |---|---|
-| `:cmp-shared` | The shared Compose UI. `App()` is the single entry point every platform renders; `RootNavState` is the root navigation state machine (Splash → Login → Home). Targets android, jvm, iosArm64, iosSimulatorArm64, iosX64, wasmJs, watchosArm64, watchosSimulatorArm64, watchosX64, see the [target matrix](#target-matrix) for which ones get the Compose UI. |
+| `:cmp-shared` | The shared Compose UI. `App()` is the single entry point every platform renders; `RootNavState` is the root navigation state machine (Splash → Login → Home). Targets android, jvm, iosArm64, iosSimulatorArm64, iosX64, wasmJs, watchosArm64, watchosSimulatorArm64, see the [target matrix](#target-matrix) for which ones get the Compose UI. |
 | `:cmp-android` | The Android app shell, `MainActivity` calls `App()`. |
 | `:cmp-desktop` | The Desktop app shell, `main()` opens a `Window { App() }`. |
 | `:cmp-web` | The wasmJs browser shell, `main()` calls `ComposeViewport { App() }`; `index.html` loads the bundle. |
