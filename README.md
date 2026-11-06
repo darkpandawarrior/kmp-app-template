@@ -92,7 +92,7 @@ The wiring guard is a grep over marker comments. It stops a fork shipping an unr
 
 The version badges above are generated. `scripts/gen-readme.sh` rewrites the span between the `AUTOGEN:versions` markers from `gradle/libs.versions.toml` and the Gradle wrapper, and CI fails if the committed README differs from its output. A badge with no source of truth in the repo would not survive that check, which is why there are only three.
 
-detekt and ktlint apply to every module from the root build and run under `check`. Four ktlint rules are off in `.editorconfig` and detekt turns the same four off in `config/detekt/detekt.yml`, so change both sides or neither. There is no detekt baseline. A rule that fires means fix the code, or disable the rule with the reason written beside it.
+detekt and ktlint apply to every module from the root build and run under `check`. Three ktlint rules are disabled in `.editorconfig` (filename, no-wildcard-imports, property-naming), and `config/detekt/detekt.yml` carries the matching change for each: `MatchingDeclarationName` and `WildcardImport` off, `TopLevelPropertyNaming` set to PascalCase. Line length is owned by ktlint alone at 140, with detekt's `MaxLineLength` off. Change both files together or neither. There is no detekt baseline. A rule that fires means fix the code, or disable the rule with the reason written beside it.
 
 UX standards (edge-to-edge, predictive back, dark theme, reduced motion) are in [DESIGN.md](DESIGN.md).
 
